@@ -35,6 +35,7 @@ namespace SistemaPolicialIntegral.Backup
             UIMenuItem itemClearRoadblock = new UIMenuItem("Levantar Bloqueo de Carretera", "Desmantela el control y corte de carretera activo.");
             UIMenuItem itemPit = new UIMenuItem("Ejecutar Maniobra PIT", "Aplica un impulso de desestabilización en el eje trasero del fugitivo.");
             UIMenuItem itemBoxing = new UIMenuItem("Coordinar Maniobra de Caja", "Ordena a los patrulleros cercar y encerrar el vehículo en fuga.");
+            UIMenuItem itemDismissBackup = new UIMenuItem("~g~Despedir / Cancelar Apoyos (Codigo 4)", "Libera a todas las unidades de apoyo y borra sus marcas del radar.");
 
             menu.AddItem(itemZeta);
             menu.AddItem(itemTrafico);
@@ -51,6 +52,7 @@ namespace SistemaPolicialIntegral.Backup
             menu.AddItem(itemClearRoadblock);
             menu.AddItem(itemPit);
             menu.AddItem(itemBoxing);
+            menu.AddItem(itemDismissBackup);
 
             menu.OnItemSelect += OnItemSelect;
 
@@ -77,11 +79,13 @@ namespace SistemaPolicialIntegral.Backup
                 if (index == 9)
                 {
                     SpikeStripManager.DeploySpikeStrips();
+                    PoliceSuite.Common.SpanishVoiceDispatchEngine.AnnounceSpikesDeployed();
                     return;
                 }
                 if (index == 10)
                 {
                     SpikeStripManager.RemoveSpikeStrips();
+                    PoliceSuite.Common.SpanishVoiceDispatchEngine.SpeakOfficer("Bandas de pinchos retiradas de la calzada.");
                     return;
                 }
                 if (index == 11)
@@ -92,6 +96,7 @@ namespace SistemaPolicialIntegral.Backup
                 if (index == 12)
                 {
                     RoadblockManager.ClearRoadblock();
+                    PoliceSuite.Common.SpanishVoiceDispatchEngine.SpeakOfficer("Bloqueo de carretera levantado. Circulación restablecida.");
                     return;
                 }
                 if (index == 13)
@@ -102,6 +107,11 @@ namespace SistemaPolicialIntegral.Backup
                 if (index == 14)
                 {
                     PursuitTacticsManager.OrderBoxingIn();
+                    return;
+                }
+                if (index == 15)
+                {
+                    BackupLifecycleManager.DismissAllBackup();
                     return;
                 }
 

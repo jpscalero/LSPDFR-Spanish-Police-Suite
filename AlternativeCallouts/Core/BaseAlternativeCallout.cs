@@ -80,6 +80,7 @@ namespace AlternativeCallouts.Core
                 Cleaner.RegisterBlip(DestinationBlip);
 
                 AlternativeDispatchHelper.SendDispatchNotification(DisplayName, "En Camino", DispatchSubtitle);
+                SpanishVoiceDispatchEngine.AnnounceCalloutDispatched(DisplayName);
                 CurrentPhase = ECalloutPhase.EnRoute;
                 return base.OnCalloutAccepted();
             }
@@ -131,7 +132,12 @@ namespace AlternativeCallouts.Core
                 if (CurrentPhase == ECalloutPhase.Arrival && distance <= 45f)
                 {
                     CurrentPhase = ECalloutPhase.Active;
-                    if (DestinationBlip != null && DestinationBlip.Exists()) DestinationBlip.DisableRoute();
+                    if (DestinationBlip != null && DestinationBlip.Exists())
+                    {
+                        DestinationBlip.DisableRoute();
+                        DestinationBlip.Delete();
+                        DestinationBlip = null;
+                    }
 
                     for (int i = 0; i < Suspects.Count; i++)
                     {
@@ -247,6 +253,7 @@ namespace AlternativeCallouts.Core
             CurrentPhase = ECalloutPhase.Cleanup;
             IsCompleted = true;
             AlternativeDispatchHelper.SendDispatchNotification(DisplayName, "Codigo 4", "Situacion bajo control. Unidades disponibles.");
+            SpanishVoiceDispatchEngine.AnnounceCode4();
             End();
         }
 
@@ -256,7 +263,12 @@ namespace AlternativeCallouts.Core
             try
             {
                 CurrentPhase = ECalloutPhase.Cleanup;
-                if (DestinationBlip != null && DestinationBlip.Exists()) DestinationBlip.DisableRoute();
+                if (DestinationBlip != null && DestinationBlip.Exists())
+                {
+                    DestinationBlip.DisableRoute();
+                    DestinationBlip.Delete();
+                    DestinationBlip = null;
+                }
                 Cleaner.CleanAll(false);
                 Suspects.Clear();
                 Civilians.Clear();

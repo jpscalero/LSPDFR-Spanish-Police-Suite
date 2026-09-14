@@ -79,6 +79,7 @@ namespace PeligroExtremoCallouts.Core
                 DestinationBlip.EnableRoute(Color.Red);
                 Cleaner.RegisterBlip(DestinationBlip);
                 DispatchHelper.SendDispatchNotification(DisplayName, "Unidad en Camino", DispatchSubtitle);
+                SpanishVoiceDispatchEngine.AnnounceCalloutDispatched(DisplayName);
                 CurrentPhase = ECalloutPhase.EnRoute;
                 return base.OnCalloutAccepted();
             }
@@ -159,7 +160,12 @@ namespace PeligroExtremoCallouts.Core
         protected virtual void TransitionToEngagement()
         {
             CurrentPhase = ECalloutPhase.ActiveEngagement;
-            if (DestinationBlip != null && DestinationBlip.Exists()) DestinationBlip.DisableRoute();
+            if (DestinationBlip != null && DestinationBlip.Exists())
+            {
+                DestinationBlip.DisableRoute();
+                DestinationBlip.Delete();
+                DestinationBlip = null;
+            }
             UnlockPeds(Suspects);
             UnlockPeds(FriendlyPeds);
             OnPlayerArrival();
@@ -249,6 +255,7 @@ namespace PeligroExtremoCallouts.Core
             CurrentPhase = ECalloutPhase.Cleanup;
             IsCompleted = true;
             DispatchHelper.SendDispatchNotification(DisplayName, "Codigo 4", "Situacion asegurada y bajo control. Buen trabajo.");
+            SpanishVoiceDispatchEngine.AnnounceCode4();
             End();
         }
 
@@ -258,7 +265,12 @@ namespace PeligroExtremoCallouts.Core
             try
             {
                 CurrentPhase = ECalloutPhase.Cleanup;
-                if (DestinationBlip != null && DestinationBlip.Exists()) DestinationBlip.DisableRoute();
+                if (DestinationBlip != null && DestinationBlip.Exists())
+                {
+                    DestinationBlip.DisableRoute();
+                    DestinationBlip.Delete();
+                    DestinationBlip = null;
+                }
                 Cleaner.CleanAll(false);
                 Suspects.Clear();
                 Victims.Clear();

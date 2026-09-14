@@ -42,6 +42,9 @@ namespace RadioYJusticia.Radio
 
                 Game.LogTrivial("RadioYJusticia [SALA 091]: " + message);
 
+                // Locución de voz en español auténtico de centralita
+                PoliceSuite.Common.SpanishVoiceDispatchEngine.SpeakDispatch(message);
+
                 // Click de cierre de microfonía tras 4.8 segundos
                 GameFiber.StartNew(delegate
                 {
@@ -72,6 +75,9 @@ namespace RadioYJusticia.Radio
                 Game.DisplaySubtitle("~y~[" + indicativo + "]~w~ " + message, 4500);
 
                 Game.LogTrivial("RadioYJusticia [" + indicativo + "]: " + message);
+
+                // Locución de viva voz en español del agente policial
+                PoliceSuite.Common.SpanishVoiceDispatchEngine.SpeakOfficer(message);
 
                 GameFiber.StartNew(delegate
                 {

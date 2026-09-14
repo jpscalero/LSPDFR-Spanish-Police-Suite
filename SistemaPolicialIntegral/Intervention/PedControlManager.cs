@@ -57,6 +57,7 @@ namespace SistemaPolicialIntegral.Intervention
             );
 
             AudioEngine.PlayMenuSelect();
+            PoliceSuite.Common.SpanishVoiceDispatchEngine.AnnounceEscort();
             Game.DisplaySubtitle("~b~[ESCOLTA POLICIAL]~w~ Sujetando al detenido por el brazo. Camine hacia el patrullero.", 4000);
         }
 
@@ -103,6 +104,7 @@ namespace SistemaPolicialIntegral.Intervention
             NativeFunction.Natives.SET_VEHICLE_DOORS_LOCKED(vehicle, 4);
 
             AudioEngine.PlaySirdeeClose();
+            PoliceSuite.Common.SpanishVoiceDispatchEngine.SpeakOfficer("Suba al vehiculo policial despacio.");
             Game.DisplayNotification("~b~[PATRULLA]~w~ Detenido introducido en el asiento trasero. Puertas de seguridad bloqueadas.");
         }
 
@@ -128,6 +130,7 @@ namespace SistemaPolicialIntegral.Intervention
             {
                 NativeFunction.Natives.SET_VEHICLE_DOORS_LOCKED(vehicle, 1);
                 seatedSuspect.Tasks.LeaveVehicle(vehicle, LeaveVehicleFlags.None);
+                PoliceSuite.Common.SpanishVoiceDispatchEngine.AnnounceOrderDriverOut();
 
                 GameFiber.StartNew(delegate
                 {
@@ -165,6 +168,7 @@ namespace SistemaPolicialIntegral.Intervention
             NativeFunction.Natives.SET_ENABLE_HANDCUFFS(suspect, true);
             NativeFunction.Natives.TASK_PLAY_ANIM(suspect, "random@arrests@busted", "idle_a", 8.0f, -8.0f, -1, 1, 0, false, false, false);
             AudioEngine.PlayMenuSelect();
+            PoliceSuite.Common.SpanishVoiceDispatchEngine.AnnounceKneel();
             Game.DisplaySubtitle("~b~[ORDEN]~w~ Sospechoso puesto de rodillas.", 3000);
         }
 
@@ -177,6 +181,7 @@ namespace SistemaPolicialIntegral.Intervention
             NativeFunction.Natives.SET_ENABLE_HANDCUFFS(suspect, true);
             NativeFunction.Natives.TASK_START_SCENARIO_IN_PLACE(suspect, "WORLD_HUMAN_PICNIC", 0, true);
             AudioEngine.PlayMenuSelect();
+            PoliceSuite.Common.SpanishVoiceDispatchEngine.AnnounceSitCurb();
             Game.DisplaySubtitle("~b~[ORDEN]~w~ Sospechoso sentado en el suelo / bordillo.", 3000);
         }
 
@@ -189,6 +194,7 @@ namespace SistemaPolicialIntegral.Intervention
             NativeFunction.Natives.SET_ENABLE_HANDCUFFS(suspect, true);
             suspect.Tasks.PutHandsUp(-1, Game.LocalPlayer.Character);
             AudioEngine.PlayMenuSelect();
+            PoliceSuite.Common.SpanishVoiceDispatchEngine.SpeakOfficer("Pongase de pie despacio y mantenga las manos visibles.");
             Game.DisplaySubtitle("~g~[ORDEN]~w~ Sospechoso puesto en pie.", 3000);
         }
     }

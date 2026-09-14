@@ -51,6 +51,7 @@ namespace SistemaPolicialIntegral.Backup
                 );
 
                 NativeFunction.Natives.PLAY_SOUND_FRONTEND(-1, "CONFIRM_BEEP", "HUD_MINI_GAME_SOUNDSET", false);
+                PoliceSuite.Common.SpanishVoiceDispatchEngine.SpeakOfficer("Atencion patrullas, ejecutando maniobra PIT sobre el vehiculo a la fuga.");
                 Game.DisplayNotification("~y~[MANIOBRA PIT]~w~ Impacto angular ejecutado con éxito en el eje posterior del fugitivo.");
             }
             else
@@ -69,6 +70,7 @@ namespace SistemaPolicialIntegral.Backup
             }
 
             AudioEngine.PlaySirdeeOpen();
+            PoliceSuite.Common.SpanishVoiceDispatchEngine.SpeakOfficer("Atencion unidades, procedan a la maniobra de caja para encerrar el vehiculo.");
             Game.DisplaySubtitle("~b~[SIRDEE / TRÁFICO]~w~ «Atención unidades de persecución, coordinando maniobra de caja en 3, 2, 1...»", 5000);
 
             GameFiber.StartNew(delegate

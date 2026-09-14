@@ -99,11 +99,11 @@ if (-not (Test-Path $OutputDir)) {
 
 # 4. Definición de los 8 Módulos de la Suite
 $AllModules = @(
-    @{ Name = "SistemaPolicialIntegral";    Dir = "SistemaPolicialIntegral";    NeedsShared = $false },
+    @{ Name = "SistemaPolicialIntegral";    Dir = "SistemaPolicialIntegral";    NeedsShared = $true  },
     @{ Name = "PoliceLifeSystem";           Dir = "PoliceLifeSystem";           NeedsShared = $false },
     @{ Name = "TacticalOps";                Dir = "TacticalOps";                NeedsShared = $false },
-    @{ Name = "RadioYJusticia";             Dir = "RadioYJusticia";             NeedsShared = $false },
-    @{ Name = "MisionesEspeciales";         Dir = "MisionesEspeciales";         NeedsShared = $false },
+    @{ Name = "RadioYJusticia";             Dir = "RadioYJusticia";             NeedsShared = $true  },
+    @{ Name = "MisionesEspeciales";         Dir = "MisionesEspeciales";         NeedsShared = $true  },
     @{ Name = "TacticalAndFederalCallouts"; Dir = "TacticalAndFederalCallouts"; NeedsShared = $true  },
     @{ Name = "PeligroExtremoCallouts";     Dir = "PeligroExtremoCallouts";     NeedsShared = $true  },
     @{ Name = "AlternativeCallouts";        Dir = "AlternativeCallouts";        NeedsShared = $true  }
@@ -159,6 +159,12 @@ foreach ($mod in $ModulesToBuild) {
     $rspLines.Add("/reference:System.Core.dll")
     $rspLines.Add("/reference:System.Drawing.dll")
     $rspLines.Add("/reference:System.Windows.Forms.dll")
+    $SpeechRef = "C:\Windows\Microsoft.NET\assembly\GAC_MSIL\System.Speech\v4.0_4.0.0.0__31bf3856ad364e35\System.Speech.dll"
+    if (Test-Path $SpeechRef) {
+        $rspLines.Add("/reference:`"$SpeechRef`"")
+    } else {
+        $rspLines.Add("/reference:System.Speech.dll")
+    }
 
     foreach ($s in $sources) {
         $rspLines.Add("`"$s`"")

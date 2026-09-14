@@ -15,6 +15,7 @@ namespace SistemaPolicialIntegral.Intervention
                 {
                     if (suspect == null || !suspect.Exists()) return;
                 
+                PoliceSuite.Common.SpanishVoiceDispatchEngine.AnnounceAlcoholTest();
                 Game.DisplaySubtitle("~b~Agente:~w~ Por favor, sople continuamente hasta que yo le diga.", 4000);
                 GameFiber.Sleep(2000);
                 

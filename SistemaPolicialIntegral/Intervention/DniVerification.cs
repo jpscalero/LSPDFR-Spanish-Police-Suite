@@ -46,6 +46,7 @@ namespace SistemaPolicialIntegral.Intervention
             string msg = string.Format("~b~MINISTERIO DEL INTERIOR~n~~w~Nombre: {0}~n~DNI: {1}~n~Nacimiento: {2}~n~Antecedentes: {3}",
                 nombreCompleto, dni, fechaNacimiento, textoAntecedentes);
 
+            PoliceSuite.Common.SpanishVoiceDispatchEngine.AnnounceDniCheck(dni, nombreCompleto);
             Game.DisplayNotification(msg);
         }
 

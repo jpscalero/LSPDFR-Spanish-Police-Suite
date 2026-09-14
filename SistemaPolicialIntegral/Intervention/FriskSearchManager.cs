@@ -18,6 +18,7 @@ namespace SistemaPolicialIntegral.Intervention
                 {
                     if (suspect == null || !suspect.Exists()) return;
                 
+                PoliceSuite.Common.SpanishVoiceDispatchEngine.AnnounceFrisk();
                 Game.DisplaySubtitle("~b~Agente:~w~ Separe las piernas y ponga las manos donde pueda verlas.", 3000);
                 GameFiber.Sleep(3000);
                 

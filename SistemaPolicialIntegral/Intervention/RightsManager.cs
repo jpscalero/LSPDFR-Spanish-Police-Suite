@@ -24,6 +24,7 @@ namespace SistemaPolicialIntegral.Intervention
                 };
 
                 Game.DisplayNotification("~b~INFORMACIÓN DE DERECHOS~n~~w~Iniciando lectura (Art. 520 LECrim)");
+                PoliceSuite.Common.SpanishVoiceDispatchEngine.AnnounceRights();
 
                 foreach (string derecho in derechos)
                 {

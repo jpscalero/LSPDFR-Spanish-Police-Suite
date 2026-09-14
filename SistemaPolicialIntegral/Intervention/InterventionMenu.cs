@@ -97,6 +97,7 @@ namespace SistemaPolicialIntegral.Intervention
                     {
                         if (targetPed != null && targetPed.Exists())
                         {
+                            PoliceSuite.Common.SpanishVoiceDispatchEngine.AnnounceArrest();
                             NativeFunction.Natives.SET_ENABLE_HANDCUFFS(targetPed, true);
                             targetPed.Tasks.PutHandsUp(-1, Game.LocalPlayer.Character);
                             Game.DisplayNotification("~b~Sujeto engrilletado.");
@@ -186,6 +187,7 @@ namespace SistemaPolicialIntegral.Intervention
                     {
                         if (targetPed != null && targetPed.Exists())
                         {
+                            PoliceSuite.Common.SpanishVoiceDispatchEngine.SpeakOfficer("Queda en libertad. Puede marcharse.");
                             if (PedControlManager.IsEscorting && PedControlManager.GrabbedPed == targetPed)
                             {
                                 PedControlManager.ReleaseGrabbedPed();

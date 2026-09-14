@@ -4,6 +4,7 @@ using Rage;
 using Rage.Native;
 using LSPD_First_Response.Mod.API;
 using LSPD_First_Response.Mod.Callouts;
+using PoliceSuite.Common;
 
 namespace MisionesEspeciales.Core
 {
@@ -16,6 +17,7 @@ namespace MisionesEspeciales.Core
         protected List<Ped> Allies;
         protected List<Vehicle> Vehicles;
         protected List<Blip> EntityBlips;
+        protected Dictionary<Ped, Blip> SuspectBlips;
 
         protected bool IsScenarioArrived;
         protected bool IsScenarioFinished;
@@ -28,6 +30,7 @@ namespace MisionesEspeciales.Core
             Allies = new List<Ped>();
             Vehicles = new List<Vehicle>();
             EntityBlips = new List<Blip>();
+            SuspectBlips = new Dictionary<Ped, Blip>();
             IsScenarioArrived = false;
             IsScenarioFinished = false;
             TickTimer = 0;
@@ -50,6 +53,7 @@ namespace MisionesEspeciales.Core
 
             Game.DisplayNotification("3dtextures", "mpgroundlogo_cops", "~b~SALA 091 / 062", "~y~AVISO DESPACHADO", "~w~Proceda con precaución al punto indicado en el GPS.");
             NativeFunction.Natives.PLAY_SOUND_FRONTEND(-1, "CONFIRM_BEEP", "HUD_MINI_GAME_SOUNDSET", false);
+            PoliceSuite.Common.SpanishVoiceDispatchEngine.SpeakDispatch("Sala 091 a todas las unidades. Nuevo requerimiento especial asignado. Procedan al lugar.");
 
             return base.OnCalloutAccepted();
         }
@@ -66,6 +70,7 @@ namespace MisionesEspeciales.Core
                     if (AreaBlip != null && AreaBlip.Exists())
                     {
                         AreaBlip.Delete();
+                        AreaBlip = null;
                     }
                     OnPlayerArrived();
                 }
@@ -77,6 +82,10 @@ namespace MisionesEspeciales.Core
             if (TickTimer >= 25)
             {
                 TickTimer = 0;
+
+                // Limpieza dinamica de blips de sospechosos abatidos o arrestados
+                CalloutBlips.UpdatePedBlips(SuspectBlips, true);
+
                 OnScenarioTick();
             }
         }
@@ -104,6 +113,7 @@ namespace MisionesEspeciales.Core
                 b.Color = System.Drawing.Color.Red;
                 b.Scale = 0.75f;
                 EntityBlips.Add(b);
+                SuspectBlips[ped] = b;
                 Suspects.Add(ped);
             }
             return ped;
@@ -143,6 +153,7 @@ namespace MisionesEspeciales.Core
             IsScenarioFinished = true;
 
             NativeFunction.Natives.PLAY_SOUND_FRONTEND(-1, "FLIGHT_SCHOOL_LESSON_PASSED", "HUD_AWARDS", false);
+            PoliceSuite.Common.SpanishVoiceDispatchEngine.AnnounceCode4();
             Game.DisplayNotification("3dtextures", "mpgroundlogo_cops", "~g~MISIÓN COMPLETADA", string.Format("~y~{0}", title), summary);
 
             End();
@@ -152,13 +163,18 @@ namespace MisionesEspeciales.Core
         {
             base.End();
 
-            if (AreaBlip != null && AreaBlip.Exists()) AreaBlip.Delete();
+            if (AreaBlip != null && AreaBlip.Exists())
+            {
+                AreaBlip.Delete();
+                AreaBlip = null;
+            }
 
             foreach (Blip b in EntityBlips)
             {
                 if (b != null && b.Exists()) b.Delete();
             }
             EntityBlips.Clear();
+            SuspectBlips.Clear();
 
             foreach (Ped p in Suspects)
             {

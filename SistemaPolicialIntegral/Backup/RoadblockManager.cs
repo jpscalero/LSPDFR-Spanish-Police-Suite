@@ -71,7 +71,33 @@ namespace SistemaPolicialIntegral.Backup
                 roadblockBlips.Add(b);
 
                 AudioEngine.PlaySirdeeClose();
+                PoliceSuite.Common.SpanishVoiceDispatchEngine.AnnounceRoadblockDeployed();
                 Game.DisplayNotification("~b~[BLOQUEO LISTO]~w~ Patrullas en formación de embudo con agentes armados en cobertura.");
+
+                // Monitorizacion de autodestruccion si el jugador se aleja a mas de 220 metros
+                GameFiber.StartNew(delegate
+                {
+                    try
+                    {
+                        uint deployedTime = Game.GameTime;
+                        while (roadblockBlips.Count > 0 && (Game.GameTime - deployedTime < 180000))
+                        {
+                            GameFiber.Sleep(5000);
+                            Ped pl = Game.LocalPlayer.Character;
+                            if (pl != null && pl.Exists() && pl.Position.DistanceTo(targetRoadPos) > 230f && (Game.GameTime - deployedTime > 30000))
+                            {
+                                Game.LogTrivial("RoadblockManager: Jugador alejado a mas de 230m del corte de carretera. Levantando bloqueo.");
+                                ClearRoadblock();
+                                break;
+                            }
+                        }
+                    }
+                    catch (System.Threading.ThreadAbortException) { }
+                    catch (Exception ex)
+                    {
+                        Game.LogTrivial("RoadblockManager auto-clear fiber error: " + ex.Message);
+                    }
+                });
                 }
                 catch (System.Threading.ThreadAbortException) { }
                 catch (Exception ex)
@@ -85,7 +111,11 @@ namespace SistemaPolicialIntegral.Backup
         {
             foreach (Blip b in roadblockBlips)
             {
-                if (b != null && b.Exists()) b.Delete();
+                if (b != null && b.Exists())
+                {
+                    b.DisableRoute();
+                    b.Delete();
+                }
             }
             roadblockBlips.Clear();
 

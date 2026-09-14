@@ -7,6 +7,7 @@ using SistemaPolicialIntegral.MDT;
 using SistemaPolicialIntegral.Backup;
 using SistemaPolicialIntegral.Ballistics;
 using SistemaPolicialIntegral.Census;
+using SistemaPolicialIntegral.Services;
 
 namespace SistemaPolicialIntegral
 {
@@ -146,6 +147,21 @@ namespace SistemaPolicialIntegral
                         catch (Exception ex)
                         {
                             Game.LogTrivial("SPI.PedHooker fatal fiber error: " + ex.Message);
+                        }
+                    });
+
+                    // Módulo 7: Patrullas Ambientales en Respuesta de Emergencia y Ciclo de Vida SIRDEE
+                    GameFiber.StartNew(delegate
+                    {
+                        try
+                        {
+                            BackupLifecycleManager.Initialize();
+                            AmbientEmergencyPatrolSystem.Start();
+                        }
+                        catch (System.Threading.ThreadAbortException) { }
+                        catch (Exception ex)
+                        {
+                            Game.LogTrivial("SPI.AmbientEmergencyPatrolSystem fatal fiber error: " + ex.Message);
                         }
                     });
 

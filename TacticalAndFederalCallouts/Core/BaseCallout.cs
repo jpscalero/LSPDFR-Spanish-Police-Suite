@@ -75,6 +75,7 @@ namespace TacticalAndFederalCallouts.Core
                 DestinationBlip.EnableRoute(Color.Red);
                 Cleaner.RegisterBlip(DestinationBlip);
                 DispatchHelper.SendDispatchNotification(DisplayName, "Unidad en Camino", DispatchSubtitle);
+                SpanishVoiceDispatchEngine.AnnounceCalloutDispatched(DisplayName);
                 CurrentPhase = ECalloutPhase.EnRoute;
                 return base.OnCalloutAccepted();
             }
@@ -155,7 +156,12 @@ namespace TacticalAndFederalCallouts.Core
         protected virtual void TransitionToEngagement()
         {
             CurrentPhase = ECalloutPhase.ActiveEngagement;
-            if (DestinationBlip != null && DestinationBlip.Exists()) DestinationBlip.DisableRoute();
+            if (DestinationBlip != null && DestinationBlip.Exists())
+            {
+                DestinationBlip.DisableRoute();
+                DestinationBlip.Delete();
+                DestinationBlip = null;
+            }
             UnlockPeds(Suspects);
             UnlockPeds(FriendlyPeds);
             OnPlayerArrival();
@@ -279,6 +285,7 @@ namespace TacticalAndFederalCallouts.Core
             CurrentPhase = ECalloutPhase.Cleanup;
             IsCompleted = true;
             DispatchHelper.SendDispatchNotification(DisplayName, "Codigo 4", "Objetivo asegurado. La situacion esta bajo control.");
+            SpanishVoiceDispatchEngine.AnnounceCode4();
             End();
         }
 
@@ -288,7 +295,12 @@ namespace TacticalAndFederalCallouts.Core
             try
             {
                 CurrentPhase = ECalloutPhase.Cleanup;
-                if (DestinationBlip != null && DestinationBlip.Exists()) DestinationBlip.DisableRoute();
+                if (DestinationBlip != null && DestinationBlip.Exists())
+                {
+                    DestinationBlip.DisableRoute();
+                    DestinationBlip.Delete();
+                    DestinationBlip = null;
+                }
                 Cleaner.CleanAll(false);
                 Suspects.Clear();
                 Hostages.Clear();

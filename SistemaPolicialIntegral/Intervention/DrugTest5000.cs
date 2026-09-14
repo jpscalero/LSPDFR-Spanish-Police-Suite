@@ -14,6 +14,7 @@ namespace SistemaPolicialIntegral.Intervention
                 {
                     if (suspect == null || !suspect.Exists()) return;
                 
+                PoliceSuite.Common.SpanishVoiceDispatchEngine.AnnounceDrugTest();
                 Game.DisplaySubtitle("~b~Agente:~w~ Vamos a tomar una muestra de saliva. Pase el hisopo por la boca.", 4000);
                 GameFiber.Sleep(3000);
                 

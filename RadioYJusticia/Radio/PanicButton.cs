@@ -10,6 +10,10 @@ namespace RadioYJusticia.Radio
     {
         private static DateTime lastPanicTime = DateTime.MinValue;
         private static readonly string[] policeModels = new string[] { "police", "police2", "police3" };
+        private static readonly System.Collections.Generic.List<Blip> _panicBlips = new System.Collections.Generic.List<Blip>();
+        private static readonly System.Collections.Generic.List<Vehicle> _panicVehicles = new System.Collections.Generic.List<Vehicle>();
+        private static readonly System.Collections.Generic.List<Ped> _panicPeds = new System.Collections.Generic.List<Ped>();
+        private static readonly object _panicLock = new object();
 
         public static void Process()
         {
@@ -46,8 +50,64 @@ namespace RadioYJusticia.Radio
             }
         }
 
+        public static void ClearPanicUnits()
+        {
+            lock (_panicLock)
+            {
+                for (int i = 0; i < _panicBlips.Count; i++)
+                {
+                    try
+                    {
+                        Blip b = _panicBlips[i];
+                        if (b != null && b.Exists())
+                        {
+                            b.DisableRoute();
+                            b.Delete();
+                        }
+                    }
+                    catch { }
+                }
+                _panicBlips.Clear();
+
+                for (int i = 0; i < _panicPeds.Count; i++)
+                {
+                    try
+                    {
+                        Ped p = _panicPeds[i];
+                        if (p != null && p.Exists())
+                        {
+                            p.BlockPermanentEvents = false;
+                            p.IsPersistent = false;
+                            p.Dismiss();
+                        }
+                    }
+                    catch { }
+                }
+                _panicPeds.Clear();
+
+                for (int i = 0; i < _panicVehicles.Count; i++)
+                {
+                    try
+                    {
+                        Vehicle v = _panicVehicles[i];
+                        if (v != null && v.Exists())
+                        {
+                            v.IsPersistent = false;
+                            v.Dismiss();
+                        }
+                    }
+                    catch { }
+                }
+                _panicVehicles.Clear();
+            }
+
+            PoliceSuite.Common.SpanishVoiceDispatchEngine.AnnounceCode4();
+        }
+
         private static void TriggerEmergencyPanic()
         {
+            ClearPanicUnits();
+
             GameFiber.StartNew(delegate
             {
                 try
@@ -66,6 +126,9 @@ namespace RadioYJusticia.Radio
                     Game.LogTrivial("RadioYJusticia.PanicButton.ActivatePanicButton (Audio): " + ex.Message);
                 }
 
+                // Locución de voz de alarma en español
+                PoliceSuite.Common.SpanishVoiceDispatchEngine.AnnouncePanicAlert();
+
                 // Subtítulo urgente en pantalla
                 Game.DisplaySubtitle("~r~¡¡10-99 TRANSMITIDO!!~n~~b~[CENTRAL]~w~ ¡Todas las unidades disponibles acudan de urgencia en Codigo 3 a la posicion del agente!", 7000);
 
@@ -82,6 +145,7 @@ namespace RadioYJusticia.Radio
 
                 // Spawn de 3 vehículos policiales de refuerzo escalonados
                 float[] distances = new float[] { 70f, 95f, 120f };
+                Vector3 emergencyOrigin = player.Position;
 
                 for (int i = 0; i < 3; i++)
                 {
@@ -101,6 +165,7 @@ namespace RadioYJusticia.Radio
                             veh.IsPersistent = true;
                             veh.IsSirenOn = true;
                             veh.IsSirenSilent = false;
+                            lock (_panicLock) { _panicVehicles.Add(veh); }
 
                             // Conductor policial
                             Ped driver = new Ped("s_m_y_cop_01", targetSpawnPos, 0f);
@@ -113,9 +178,8 @@ namespace RadioYJusticia.Radio
                                 driver.Armor = 100;
                                 driver.RelationshipGroup = "COP";
                                 NativeFunction.Natives.SET_PED_AS_COP(driver, true);
-
-                                // Conducción de emergencia Código 3 hacia la posición del jugador
                                 driver.Tasks.DriveToPosition(player.Position, 28f, VehicleDrivingFlags.Emergency);
+                                lock (_panicLock) { _panicPeds.Add(driver); }
                             }
 
                             // Acompañante policial
@@ -128,6 +192,7 @@ namespace RadioYJusticia.Radio
                                 passenger.Armor = 100;
                                 passenger.RelationshipGroup = "COP";
                                 NativeFunction.Natives.SET_PED_AS_COP(passenger, true);
+                                lock (_panicLock) { _panicPeds.Add(passenger); }
                             }
 
                             // Blip policial azul en el minimapa
@@ -137,6 +202,7 @@ namespace RadioYJusticia.Radio
                                 blip.Color = Color.FromArgb(0, 100, 255);
                                 blip.Scale = 0.85f;
                                 blip.Name = "Refuerzo Zeta (10-99)";
+                                lock (_panicLock) { _panicBlips.Add(blip); }
                             }
                         }
                     }
@@ -147,6 +213,32 @@ namespace RadioYJusticia.Radio
 
                     GameFiber.Sleep(600);
                 }
+
+                // Autolimpieza programada: transcurridos 120 segundos o si el jugador se aleja > 180m
+                GameFiber.StartNew(delegate
+                {
+                    try
+                    {
+                        uint startT = Game.GameTime;
+                        while (_panicBlips.Count > 0 && (Game.GameTime - startT < 120000))
+                        {
+                            GameFiber.Sleep(4000);
+                            Ped pl = Game.LocalPlayer.Character;
+                            if (pl != null && pl.Exists() && pl.Position.DistanceTo(emergencyOrigin) > 180f && (Game.GameTime - startT > 25000))
+                            {
+                                Game.LogTrivial("PanicButton: Jugador alejado del lugar de emergencia 10-99. Liberando patrullas y retirando blips.");
+                                break;
+                            }
+                        }
+                        ClearPanicUnits();
+                    }
+                    catch (System.Threading.ThreadAbortException) { }
+                    catch (Exception exClear)
+                    {
+                        Game.LogTrivial("PanicButton auto-clean fiber error: " + exClear.Message);
+                    }
+                });
+
                 }
                 catch (System.Threading.ThreadAbortException) { }
                 catch (Exception ex)

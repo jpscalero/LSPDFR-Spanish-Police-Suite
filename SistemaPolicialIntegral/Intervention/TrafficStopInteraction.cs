@@ -34,6 +34,7 @@ namespace SistemaPolicialIntegral.Intervention
             NativeFunction.Natives.TASK_LOOK_AT_ENTITY(driver, Game.LocalPlayer.Character, -1, 0, 2);
 
             AudioEngine.PlayMenuSelect();
+            PoliceSuite.Common.SpanishVoiceDispatchEngine.AnnounceTrafficStop();
 
             int scenario = rnd.Next(100);
 
@@ -64,6 +65,7 @@ namespace SistemaPolicialIntegral.Intervention
             if (driver != null && driver.Exists() && driver.IsAlive)
             {
                 driver.Tasks.LeaveVehicle(veh, LeaveVehicleFlags.None);
+                PoliceSuite.Common.SpanishVoiceDispatchEngine.AnnounceOrderDriverOut();
                 Game.DisplaySubtitle("~b~[AGENTE]~w~ «Por favor, apague el motor, descienda del vehículo y acompáñeme a la acera.»", 5000);
             }
         }

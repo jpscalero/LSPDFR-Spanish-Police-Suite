@@ -25,6 +25,7 @@ namespace SistemaPolicialIntegral.Backup
                 activeSpikes.Add(spike);
 
                 AudioEngine.PlaySirdeeOpen();
+                PoliceSuite.Common.SpanishVoiceDispatchEngine.AnnounceSpikesDeployed();
                 Game.DisplayNotification("~y~[CLAVOS]~w~ Banda de clavos táctica desplegada en la calzada.");
 
                 if (!isMonitoring)
