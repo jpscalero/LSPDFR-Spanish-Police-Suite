@@ -1,0 +1,37 @@
+# Large zips, rars, packages and external archives
+*.zip
+*.rar
+*.7z
+*.nupkg
+*.asi
+/*.dll
+
+# External tools and SDK downloads
+temp_mods/
+extracted_*/
+coches y plugins/
+rph_sdk/
+shvdn/
+shvdn_nightly/
+AddonSpawner/
+AddonSpawner.asi
+
+# Temporary / Scratch test scripts
+CheckEvent.*
+CheckReflect.*
+CheckRph.*
+CheckSuperEvents.*
+CheckTypes.*
+test_inspect.exe
+*.wiki/
+ExampleEvents/
+PoliceAcademyMod/
+install_*.ps1
+Refactor*.ps1
+
+# IDE and build temp files
+.vs/
+bin/
+obj/
+*.suo
+*.user
