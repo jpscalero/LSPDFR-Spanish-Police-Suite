@@ -58,118 +58,129 @@ namespace TacticalOps.Injuries
         {
             Game.LogTrivial("TacticalOps: InjuryManager loop iniciado.");
 
-            Ped playerInit = Game.LocalPlayer.Character;
-            if (playerInit != null && playerInit.Exists())
+            try
             {
-                lastHealth = playerInit.Health;
+                Ped playerInit = Game.LocalPlayer.Character;
+                if (playerInit != null && playerInit.Exists())
+                {
+                    lastHealth = playerInit.Health;
+                }
+
+                while (true)
+                {
+                    GameFiber.Yield();
+
+                    try
+                    {
+                        // Actualizar sistema de hemorragias
+                        BleedingSystem.Update();
+
+                        Ped player = Game.LocalPlayer.Character;
+                        if (player == null || !player.Exists())
+                        {
+                            continue;
+                        }
+
+                        if (player.IsDead)
+                        {
+                            if (IsLegInjured || IsArmInjured || IsTorsoInjured || BleedingSystem.IsBleeding)
+                            {
+                                ResetAll();
+                            }
+                            lastHealth = 100;
+                            GameFiber.Sleep(500);
+                            continue;
+                        }
+
+                        int currentHealth = player.Health;
+
+                        // Detectar caida brusca de salud (al menos 4 HP por impacto de bala o metralla)
+                        if (currentHealth < lastHealth - 3)
+                        {
+                            int boneId = 0;
+                            bool hitBone = false;
+                            try { hitBone = NativeFunction.Natives.GET_PED_LAST_DAMAGE_BONE<bool>(player, out boneId); } catch { }
+                            try { NativeFunction.Natives.CLEAR_PED_LAST_DAMAGE_BONE(player); } catch { }
+
+                            int zone = 0; // 0 = Torso, 1 = Pierna, 2 = Brazo
+
+                            if (hitBone && boneId != 0)
+                            {
+                                if (IsBoneLeg(boneId))
+                                {
+                                    zone = 1;
+                                }
+                                else if (IsBoneArm(boneId))
+                                {
+                                    zone = 2;
+                                }
+                                else
+                                {
+                                    zone = 0;
+                                }
+                            }
+                            else
+                            {
+                                // Probabilidad si no se identifica el hueso exacto: 45% Torso, 30% Pierna, 25% Brazo
+                                int roll = randomGen.Next(100);
+                                if (roll < 45) zone = 0;
+                                else if (roll < 75) zone = 1;
+                                else zone = 2;
+                            }
+
+                            if (zone == 0 && !IsTorsoInjured)
+                            {
+                                IsTorsoInjured = true;
+                                BleedingSystem.StartBleeding();
+                                Game.DisplayNotification("~r~¡IMPACTO DE BALA EN TORSO!~w~ Hemorragia masiva. Aplica vendaje IFAK.");
+                                NativeFunction.Natives.PLAY_SOUND_FRONTEND(-1, "Beep_Red", "DLC_HEIST_HACKING_SNAKE_SOUNDS", false);
+                            }
+                            else if (zone == 1 && !IsLegInjured)
+                            {
+                                IsLegInjured = true;
+                                Game.DisplayNotification("~r~¡IMPACTO DE BALA EN PIERNA!~w~ Movilidad reducida. Aplica torniquete CAT.");
+                                NativeFunction.Natives.PLAY_SOUND_FRONTEND(-1, "Beep_Red", "DLC_HEIST_HACKING_SNAKE_SOUNDS", false);
+                            }
+                            else if (zone == 2 && !IsArmInjured)
+                            {
+                                IsArmInjured = true;
+                                Game.DisplayNotification("~r~¡IMPACTO DE BALA EN BRAZO!~w~ Temblor muscular y perdida de precision de tiro.");
+                                NativeFunction.Natives.PLAY_SOUND_FRONTEND(-1, "Beep_Red", "DLC_HEIST_HACKING_SNAKE_SOUNDS", false);
+                            }
+                        }
+
+                        lastHealth = currentHealth;
+
+                        // Mantener efectos persistentes de las lesiones activas
+                        if (IsLegInjured)
+                        {
+                            NativeFunction.Natives.SET_PED_MOVE_RATE_OVERRIDE(player, 0.6f);
+                        }
+
+                        if (IsArmInjured)
+                        {
+                            bool isAiming = false;
+                            try { isAiming = NativeFunction.Natives.IS_PLAYER_FREE_AIMING<bool>(Game.LocalPlayer); } catch { }
+                            if (isAiming || player.IsShooting)
+                            {
+                                NativeFunction.Natives.SHAKE_GAMEPLAY_CAM("HAND_SHAKE", 0.75f);
+                            }
+                        }
+                    }
+                    catch (System.Threading.ThreadAbortException)
+                    {
+                        break;
+                    }
+                    catch (Exception ex)
+                    {
+                        Game.LogTrivial("TacticalOps.InjuryManager.Process loop: " + ex.Message);
+                    }
+                }
             }
-
-            while (true)
+            catch (System.Threading.ThreadAbortException) { }
+            catch (Exception ex)
             {
-                GameFiber.Yield();
-
-                // Actualizar sistema de hemorragias
-                BleedingSystem.Update();
-
-                Ped player = Game.LocalPlayer.Character;
-                if (player == null || !player.Exists())
-                {
-                    continue;
-                }
-
-                if (player.IsDead)
-                {
-                    if (IsLegInjured || IsArmInjured || IsTorsoInjured || BleedingSystem.IsBleeding)
-                    {
-                        ResetAll();
-                    }
-                    lastHealth = 100;
-                    GameFiber.Sleep(500);
-                    continue;
-                }
-
-                int currentHealth = player.Health;
-
-                // Detectar caida brusca de salud (al menos 4 HP por impacto de bala o metralla)
-                if (currentHealth < lastHealth - 3)
-                {
-                    int boneId = 0;
-                    bool hitBone = NativeFunction.Natives.GET_PED_LAST_DAMAGE_BONE<bool>(player, out boneId);
-                    NativeFunction.Natives.CLEAR_PED_LAST_DAMAGE_BONE(player);
-
-                    int zone = 0; // 0 = Torso, 1 = Pierna, 2 = Brazo
-
-                    if (hitBone && boneId != 0)
-                    {
-                        if (IsBoneLeg(boneId))
-                        {
-                            zone = 1;
-                        }
-                        else if (IsBoneArm(boneId))
-                        {
-                            zone = 2;
-                        }
-                        else
-                        {
-                            zone = 0;
-                        }
-                    }
-                    else
-                    {
-                        // Probabilidad si no se identifica el hueso exacto: 45% Torso, 30% Pierna, 25% Brazo
-                        int roll = randomGen.Next(100);
-                        if (roll < 45)
-                        {
-                            zone = 0;
-                        }
-                        else if (roll < 75)
-                        {
-                            zone = 1;
-                        }
-                        else
-                        {
-                            zone = 2;
-                        }
-                    }
-
-                    if (zone == 0) // Torso
-                    {
-                        IsTorsoInjured = true;
-                        BleedingSystem.StartBleeding();
-                        Game.DisplayNotification("~r~¡IMPACTO DE BALA EN TORSO!~w~ Sangrado activo detectado.");
-                        NativeFunction.Natives.PLAY_SOUND_FRONTEND(-1, "Bed", "WastedSounds", false);
-                    }
-                    else if (zone == 1) // Pierna
-                    {
-                        IsLegInjured = true;
-                        NativeFunction.Natives.SET_PED_MOVE_RATE_OVERRIDE(player, 0.6f);
-                        Game.DisplayNotification("~r~¡IMPACTO DE BALA EN PIERNA!~w~ Movilidad reducida. Aplica un torniquete CAT.");
-                        NativeFunction.Natives.PLAY_SOUND_FRONTEND(-1, "Beep_Red", "DLC_HEIST_HACKING_SNAKE_SOUNDS", false);
-                    }
-                    else // Brazo
-                    {
-                        IsArmInjured = true;
-                        Game.DisplayNotification("~r~¡IMPACTO DE BALA EN BRAZO!~w~ Temblor muscular y perdida de precision de tiro.");
-                        NativeFunction.Natives.PLAY_SOUND_FRONTEND(-1, "Beep_Red", "DLC_HEIST_HACKING_SNAKE_SOUNDS", false);
-                    }
-                }
-
-                lastHealth = currentHealth;
-
-                // Mantener efectos persistentes de las lesiones activas
-                if (IsLegInjured)
-                {
-                    NativeFunction.Natives.SET_PED_MOVE_RATE_OVERRIDE(player, 0.6f);
-                }
-
-                if (IsArmInjured)
-                {
-                    bool isAiming = NativeFunction.Natives.IS_PLAYER_FREE_AIMING<bool>(Game.LocalPlayer);
-                    if (isAiming || player.IsShooting)
-                    {
-                        NativeFunction.Natives.SHAKE_GAMEPLAY_CAM("HAND_SHAKE", 0.75f);
-                    }
-                }
+                Game.LogTrivial("TacticalOps.InjuryManager.Process fatal: " + ex.Message);
             }
         }
 

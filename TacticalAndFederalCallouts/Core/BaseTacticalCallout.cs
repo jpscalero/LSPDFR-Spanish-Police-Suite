@@ -226,46 +226,62 @@ namespace TacticalAndFederalCallouts.Core
 
             GameFiber fiber = GameFiber.StartNew(delegate
             {
-                while (HostageExecutionActive && HostageCountdownRemaining > 0)
+                try
                 {
-                    if (ExecutionerSuspect == null || !ExecutionerSuspect.Exists() || !ExecutionerSuspect.IsAlive || Functions.IsPedArrested(ExecutionerSuspect))
+                    while (HostageExecutionActive && HostageCountdownRemaining > 0)
                     {
-                        HostageExecutionActive = false;
-                        Game.DisplaySubtitle("~g~[SWAT]~w~ ¡Tirador neutralizado! Rehén a salvo.");
-                        break;
-                    }
-
-                    if (TargetedHostage == null || !TargetedHostage.Exists() || !TargetedHostage.IsAlive)
-                    {
-                        HostageExecutionActive = false;
-                        break;
-                    }
-
-                    Game.DisplayHelp(string.Format("~r~AMENAZA A REHÉN: ~w~{0}s antes de ejecución. {1}", HostageCountdownRemaining, warning));
-                    GameFiber.Sleep(1000);
-                    HostageCountdownRemaining--;
-                }
-
-                if (HostageExecutionActive && HostageCountdownRemaining <= 0)
-                {
-                    if (ExecutionerSuspect != null && ExecutionerSuspect.Exists() && ExecutionerSuspect.IsAlive &&
-                        TargetedHostage != null && TargetedHostage.Exists() && TargetedHostage.IsAlive)
-                    {
-                        ExecutionerSuspect.Tasks.FightAgainst(TargetedHostage);
-                        Game.DisplaySubtitle("~r~[SWAT] ¡Dispararon al rehén! ¡Abran fuego!");
-
-                        // Retargeting automático hacia el jugador tras abatir al rehén
-                        GameFiber.StartNew(delegate
+                        if (ExecutionerSuspect == null || !ExecutionerSuspect.Exists() || !ExecutionerSuspect.IsAlive || Functions.IsPedArrested(ExecutionerSuspect))
                         {
-                            GameFiber.Sleep(1800);
-                            if (ExecutionerSuspect != null && ExecutionerSuspect.Exists() && ExecutionerSuspect.IsAlive)
-                            {
-                                ExecutionerSuspect.BlockPermanentEvents = false;
-                                ExecutionerSuspect.Tasks.FightAgainst(Game.LocalPlayer.Character);
-                            }
-                        });
+                            HostageExecutionActive = false;
+                            Game.DisplaySubtitle("~g~[SWAT]~w~ ¡Tirador neutralizado! Rehén a salvo.");
+                            break;
+                        }
+
+                        if (TargetedHostage == null || !TargetedHostage.Exists() || !TargetedHostage.IsAlive)
+                        {
+                            HostageExecutionActive = false;
+                            break;
+                        }
+
+                        Game.DisplayHelp(string.Format("~r~AMENAZA A REHÉN: ~w~{0}s antes de ejecución. {1}", HostageCountdownRemaining, warning));
+                        GameFiber.Sleep(1000);
+                        HostageCountdownRemaining--;
                     }
-                    HostageExecutionActive = false;
+
+                    if (HostageExecutionActive && HostageCountdownRemaining <= 0)
+                    {
+                        if (ExecutionerSuspect != null && ExecutionerSuspect.Exists() && ExecutionerSuspect.IsAlive &&
+                            TargetedHostage != null && TargetedHostage.Exists() && TargetedHostage.IsAlive)
+                        {
+                            ExecutionerSuspect.Tasks.FightAgainst(TargetedHostage);
+                            Game.DisplaySubtitle("~r~[SWAT] ¡Dispararon al rehén! ¡Abran fuego!");
+
+                            // Retargeting automático hacia el jugador tras abatir al rehén
+                            GameFiber.StartNew(delegate
+                            {
+                                try
+                                {
+                                    GameFiber.Sleep(1800);
+                                    if (ExecutionerSuspect != null && ExecutionerSuspect.Exists() && ExecutionerSuspect.IsAlive)
+                                    {
+                                        ExecutionerSuspect.BlockPermanentEvents = false;
+                                        ExecutionerSuspect.Tasks.FightAgainst(Game.LocalPlayer.Character);
+                                    }
+                                }
+                                catch (System.Threading.ThreadAbortException) { }
+                                catch (Exception ex)
+                                {
+                                    Game.LogTrivial("BaseTacticalCallout.RetargetingFiber: " + ex.Message);
+                                }
+                            });
+                        }
+                        HostageExecutionActive = false;
+                    }
+                }
+                catch (System.Threading.ThreadAbortException) { }
+                catch (Exception ex)
+                {
+                    Game.LogTrivial("BaseTacticalCallout.StartHostageExecutionThreat: " + ex.Message);
                 }
             });
             Cleaner.RegisterFiber(fiber);
@@ -286,19 +302,27 @@ namespace TacticalAndFederalCallouts.Core
 
             GameFiber fiber = GameFiber.StartNew(delegate
             {
-                while (BombArmed && !BombDefused && BombSecondsRemaining > 0)
+                try
                 {
-                    Game.DisplayHelp(string.Format("~r~ARTEFACTO EXPLOSIVO ACTIVO: ~w~{0}s. Acércate y presiona ~INPUT_CONTEXT~ para desactivar.", BombSecondsRemaining));
-                    GameFiber.Sleep(1000);
-                    BombSecondsRemaining--;
-                }
+                    while (BombArmed && !BombDefused && BombSecondsRemaining > 0)
+                    {
+                        Game.DisplayHelp(string.Format("~r~ARTEFACTO EXPLOSIVO ACTIVO: ~w~{0}s. Acércate y presiona ~INPUT_CONTEXT~ para desactivar.", BombSecondsRemaining));
+                        GameFiber.Sleep(1000);
+                        BombSecondsRemaining--;
+                    }
 
-                if (BombArmed && !BombDefused && BombSecondsRemaining <= 0)
+                    if (BombArmed && !BombDefused && BombSecondsRemaining <= 0)
+                    {
+                        TriggerExplosion(BombLocation, 7, 8.0f);
+                        Game.DisplaySubtitle("~r~[SWAT] ¡El artefacto ha detonado! Bajas catastróficas.");
+                        BombArmed = false;
+                        BombExploded = true;
+                    }
+                }
+                catch (System.Threading.ThreadAbortException) { }
+                catch (Exception ex)
                 {
-                    TriggerExplosion(BombLocation, 7, 8.0f);
-                    Game.DisplaySubtitle("~r~[SWAT] ¡El artefacto ha detonado! Bajas catastróficas.");
-                    BombArmed = false;
-                    BombExploded = true;
+                    Game.LogTrivial("BaseTacticalCallout.StartBombCountdown: " + ex.Message);
                 }
             });
             Cleaner.RegisterFiber(fiber);
@@ -309,21 +333,28 @@ namespace TacticalAndFederalCallouts.Core
             BombDefused = true;
             BombArmed = false;
 
-            Ped player = Game.LocalPlayer.Character;
-            if (player != null && player.Exists())
+            try
             {
-                NativeFunction.Natives.REQUEST_ANIM_DICT("mini@repair");
-                int timeout = 0;
-                while (!NativeFunction.Natives.HAS_ANIM_DICT_LOADED<bool>("mini@repair") && timeout < 25)
+                Ped player = Game.LocalPlayer.Character;
+                if (player != null && player.Exists())
                 {
-                    GameFiber.Yield();
-                    timeout++;
-                }
+                    NativeFunction.Natives.REQUEST_ANIM_DICT("mini@repair");
+                    int timeout = 0;
+                    while (!NativeFunction.Natives.HAS_ANIM_DICT_LOADED<bool>("mini@repair") && timeout < 25)
+                    {
+                        GameFiber.Yield();
+                        timeout++;
+                    }
 
-                if (NativeFunction.Natives.HAS_ANIM_DICT_LOADED<bool>("mini@repair"))
-                {
-                    NativeFunction.Natives.TASK_PLAY_ANIM(player, "mini@repair", "fixing_a_player", 8.0f, -8.0f, 4000, 0, 0f, false, false, false);
+                    if (NativeFunction.Natives.HAS_ANIM_DICT_LOADED<bool>("mini@repair"))
+                    {
+                        NativeFunction.Natives.TASK_PLAY_ANIM(player, "mini@repair", "fixing_a_player", 8.0f, -8.0f, 4000, 0, 0f, false, false, false);
+                    }
                 }
+            }
+            catch (Exception ex)
+            {
+                Game.LogTrivial("BaseTacticalCallout.DefuseBomb: " + ex.Message);
             }
 
             if (BombProp != null && BombProp.Exists())
@@ -348,33 +379,41 @@ namespace TacticalAndFederalCallouts.Core
 
             GameFiber fiber = GameFiber.StartNew(delegate
             {
-                // Fase 1: Aturdimiento
-                for (int i = 0; i < Suspects.Count; i++)
+                try
                 {
-                    Ped s = Suspects[i];
-                    if (s != null && s.Exists() && s.IsAlive && s.Position.DistanceTo(pos) < 22f)
+                    // Fase 1: Aturdimiento
+                    for (int i = 0; i < Suspects.Count; i++)
                     {
-                        s.Tasks.Cower(5000);
-                    }
-                }
-
-                GameFiber.Sleep(5200);
-
-                // Fase 2: Recuperacion activa (Descongelamiento garantizado)
-                for (int i = 0; i < Suspects.Count; i++)
-                {
-                    Ped s = Suspects[i];
-                    if (s != null && s.Exists() && s.IsAlive && !Functions.IsPedArrested(s))
-                    {
-                        s.BlockPermanentEvents = false;
-                        NativeFunction.Natives.SET_PED_COMBAT_ATTRIBUTES(s, 46, true);
-                        NativeFunction.Natives.SET_PED_COMBAT_MOVEMENT(s, 2); // Ofensivo / Avance
-                        Ped target = GetNearestFriendlyOrPlayer(s.Position);
-                        if (target != null && target.Exists())
+                        Ped s = Suspects[i];
+                        if (s != null && s.Exists() && s.IsAlive && s.Position.DistanceTo(pos) < 22f)
                         {
-                            s.Tasks.FightAgainst(target);
+                            s.Tasks.Cower(5000);
                         }
                     }
+
+                    GameFiber.Sleep(5200);
+
+                    // Fase 2: Recuperacion activa (Descongelamiento garantizado)
+                    for (int i = 0; i < Suspects.Count; i++)
+                    {
+                        Ped s = Suspects[i];
+                        if (s != null && s.Exists() && s.IsAlive && !Functions.IsPedArrested(s))
+                        {
+                            s.BlockPermanentEvents = false;
+                            NativeFunction.Natives.SET_PED_COMBAT_ATTRIBUTES(s, 46, true);
+                            NativeFunction.Natives.SET_PED_COMBAT_MOVEMENT(s, 2); // Ofensivo / Avance
+                            Ped target = GetNearestFriendlyOrPlayer(s.Position);
+                            if (target != null && target.Exists())
+                            {
+                                s.Tasks.FightAgainst(target);
+                            }
+                        }
+                    }
+                }
+                catch (System.Threading.ThreadAbortException) { }
+                catch (Exception ex)
+                {
+                    Game.LogTrivial("BaseTacticalCallout.DetonateFlashbang: " + ex.Message);
                 }
             });
             Cleaner.RegisterFiber(fiber);

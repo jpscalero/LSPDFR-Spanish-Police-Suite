@@ -10,7 +10,9 @@ namespace SistemaPolicialIntegral.Intervention
         {
             GameFiber.StartNew(delegate
             {
-                if (suspect == null || !suspect.Exists()) return;
+                try
+                {
+                    if (suspect == null || !suspect.Exists()) return;
                 
                 Game.DisplaySubtitle("~b~Agente:~w~ Vamos a tomar una muestra de saliva. Pase el hisopo por la boca.", 4000);
                 GameFiber.Sleep(3000);
@@ -33,6 +35,12 @@ namespace SistemaPolicialIntegral.Intervention
                     resThc, resCocaina, resOpiaceos, resAnfetaminas);
                 
                 Game.DisplayNotification(msg);
+                }
+                catch (System.Threading.ThreadAbortException) { }
+                catch (Exception ex)
+                {
+                    Game.LogTrivial("SPI.DrugTest5000 error: " + ex.Message);
+                }
             });
         }
     }

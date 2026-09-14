@@ -16,40 +16,55 @@ namespace SistemaPolicialIntegral.Census
         {
             GameFiber.StartNew(delegate
             {
-                while (true)
+                try
                 {
-                    GameFiber.Yield();
-                    GameFiber.Sleep(2000);
-
-                    if (Game.LocalPlayer.Character == null || !Game.LocalPlayer.Character.Exists()) continue;
-
-                    Ped[] allPeds = World.GetAllPeds();
-                    foreach (Ped p in allPeds)
+                    while (true)
                     {
-                        if (p != null && p.Exists() && p.DistanceTo(Game.LocalPlayer.Character) < 50f)
+                        GameFiber.Yield();
+                        GameFiber.Sleep(2000);
+
+                        try
                         {
-                            if (!hookedPeds.Contains(p.Handle) && p != Game.LocalPlayer.Character)
+                            if (Game.LocalPlayer.Character == null || !Game.LocalPlayer.Character.Exists()) continue;
+
+                            Ped[] allPeds = World.GetAllPeds();
+                            if (allPeds == null) continue;
+
+                            foreach (Ped p in allPeds)
                             {
-                                bool isMale = p.IsMale;
-                                SpanishIdentity identity = SpanishIdentityGenerator.GenerateRandomIdentity(isMale);
-
-                                PedIdentities[p.Handle] = identity;
-                                hookedPeds.Add(p.Handle);
-
-                                try
+                                if (p != null && p.Exists() && p.DistanceTo(Game.LocalPlayer.Character) < 50f)
                                 {
-                                    // LSPDFR no expone un constructor publico de Persona con todos los campos.
-                                    // Almacenamos la identidad en nuestro diccionario y la mostramos
-                                    // a traves de DniVerification y el MDT SITEL.
-                                    Game.LogTrivial("SPI Census: Identidad asignada a ped " + p.Handle + ": " + identity.NombreCompleto + " DNI " + identity.DniNumero);
-                                }
-                                catch (Exception)
-                                {
-                                    // Fallback silencioso
+                                    if (!hookedPeds.Contains(p.Handle) && p != Game.LocalPlayer.Character)
+                                    {
+                                        bool isMale = p.IsMale;
+                                        SpanishIdentity identity = SpanishIdentityGenerator.GenerateRandomIdentity(isMale);
+
+                                        PedIdentities[p.Handle] = identity;
+                                        hookedPeds.Add(p.Handle);
+
+                                        try
+                                        {
+                                            Game.LogTrivial("SPI Census: Identidad asignada a ped " + p.Handle + ": " + identity.NombreCompleto + " DNI " + identity.DniNumero);
+                                        }
+                                        catch (Exception)
+                                        {
+                                            // Fallback silencioso
+                                        }
+                                    }
                                 }
                             }
                         }
+                        catch (System.Threading.ThreadAbortException) { break; }
+                        catch (Exception ex)
+                        {
+                            Game.LogTrivial("SPI Census loop error: " + ex.Message);
+                        }
                     }
+                }
+                catch (System.Threading.ThreadAbortException) { }
+                catch (Exception ex)
+                {
+                    Game.LogTrivial("SPI.PedHooker fatal fiber error: " + ex.Message);
                 }
             });
         }

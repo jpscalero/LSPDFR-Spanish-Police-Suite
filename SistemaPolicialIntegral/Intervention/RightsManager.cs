@@ -9,7 +9,9 @@ namespace SistemaPolicialIntegral.Intervention
         {
             GameFiber.StartNew(delegate
             {
-                if (suspect == null || !suspect.Exists()) return;
+                try
+                {
+                    if (suspect == null || !suspect.Exists()) return;
 
                 string[] derechos = new string[]
                 {
@@ -30,6 +32,12 @@ namespace SistemaPolicialIntegral.Intervention
                 }
                 
                 Game.DisplaySubtitle("~b~Agente:~w~ ¿Ha entendido usted sus derechos?", 3000);
+                }
+                catch (System.Threading.ThreadAbortException) { }
+                catch (Exception ex)
+                {
+                    Game.LogTrivial("SPI.RightsManager error: " + ex.Message);
+                }
             });
         }
     }

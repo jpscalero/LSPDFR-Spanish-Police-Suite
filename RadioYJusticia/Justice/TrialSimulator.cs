@@ -15,7 +15,9 @@ namespace RadioYJusticia.Justice
 
             GameFiber.StartNew(delegate
             {
-                // Espera de deliberación judicial y vista oral
+                try
+                {
+                    // Espera de deliberación judicial y vista oral
                 GameFiber.Sleep(20000);
 
                 bool esReincidente = ArrestHistoryDB.IsReoffender(record.Dni);
@@ -65,6 +67,12 @@ namespace RadioYJusticia.Justice
 
                     Game.DisplayNotification("3dtextures", "mpgroundlogo_cops", titulo, subtitulo, detalle);
                     Game.LogTrivial("RadioYJusticia [Juicio Oral]: " + record.Name + " ABSUELTO.");
+                }
+                }
+                catch (System.Threading.ThreadAbortException) { }
+                catch (Exception ex)
+                {
+                    Game.LogTrivial("RadioYJusticia.TrialSimulator fiber error: " + ex.Message);
                 }
             });
         }

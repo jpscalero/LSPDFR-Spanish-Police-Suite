@@ -19,21 +19,29 @@ namespace RadioYJusticia.Radio
             {
                 GameFiber.Yield();
 
-                if (Game.IsKeyDown(ConfigManager.PanicKey))
+                try
                 {
-                    Ped player = Game.LocalPlayer.Character;
-                    if (player != null && player.Exists() && player.IsAlive)
+                    if (Game.IsKeyDown(ConfigManager.PanicKey))
                     {
-                        if ((DateTime.Now - lastPanicTime).TotalSeconds > 25)
+                        Ped player = Game.LocalPlayer.Character;
+                        if (player != null && player.Exists() && player.IsAlive)
                         {
-                            lastPanicTime = DateTime.Now;
-                            TriggerEmergencyPanic();
-                        }
-                        else
-                        {
-                            Game.DisplayNotification("~y~Alerta 10-99 ya activa en la malla de radio. Refuerzos en camino.");
+                            if ((DateTime.Now - lastPanicTime).TotalSeconds > 25)
+                            {
+                                lastPanicTime = DateTime.Now;
+                                TriggerEmergencyPanic();
+                            }
+                            else
+                            {
+                                Game.DisplayNotification("~y~Alerta 10-99 ya activa en la malla de radio. Refuerzos en camino.");
+                            }
                         }
                     }
+                }
+                catch (System.Threading.ThreadAbortException) { break; }
+                catch (Exception ex)
+                {
+                    Game.LogTrivial("RadioYJusticia.PanicButton loop error: " + ex.Message);
                 }
             }
         }
@@ -42,8 +50,10 @@ namespace RadioYJusticia.Radio
         {
             GameFiber.StartNew(delegate
             {
-                Ped player = Game.LocalPlayer.Character;
-                if (player == null || !player.Exists()) return;
+                try
+                {
+                    Ped player = Game.LocalPlayer.Character;
+                    if (player == null || !player.Exists()) return;
 
                 // Sonido agudo de alarma de emergencia
                 try
@@ -136,6 +146,12 @@ namespace RadioYJusticia.Radio
                     }
 
                     GameFiber.Sleep(600);
+                }
+                }
+                catch (System.Threading.ThreadAbortException) { }
+                catch (Exception ex)
+                {
+                    Game.LogTrivial("RadioYJusticia: Error en fibra de emergencia 10-99: " + ex.Message);
                 }
             });
         }

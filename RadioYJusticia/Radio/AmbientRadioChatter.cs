@@ -93,8 +93,16 @@ namespace RadioYJusticia.Radio
 
             GameFiber.StartNew(delegate
             {
-                GameFiber.Sleep(4200);
-                DispatchVoice.PlayRadioClick();
+                try
+                {
+                    GameFiber.Sleep(4200);
+                    DispatchVoice.PlayRadioClick();
+                }
+                catch (System.Threading.ThreadAbortException) { }
+                catch (Exception ex)
+                {
+                    Game.LogTrivial("RadioYJusticia.AmbientRadioChatter fiber error: " + ex.Message);
+                }
             });
         }
     }

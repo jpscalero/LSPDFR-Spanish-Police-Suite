@@ -152,19 +152,27 @@ namespace SistemaPolicialIntegral.MDT
             {
                 GameFiber.Yield();
 
-                if (Game.IsKeyDown(ConfigManager.MdtKey))
+                try
                 {
-                    if (!menu.Visible)
+                    if (Game.IsKeyDown(ConfigManager.MdtKey))
                     {
-                        menu.Visible = true;
+                        if (!menu.Visible)
+                        {
+                            menu.Visible = true;
+                        }
+                        else
+                        {
+                            menu.Visible = false;
+                        }
                     }
-                    else
-                    {
-                        menu.Visible = false;
-                    }
-                }
 
-                pool.ProcessMenus();
+                    pool.ProcessMenus();
+                }
+                catch (System.Threading.ThreadAbortException) { break; }
+                catch (Exception ex)
+                {
+                    Game.LogTrivial("SPI.SitelComputerMenu loop error: " + ex.Message);
+                }
             }
         }
 

@@ -11,7 +11,9 @@ namespace SistemaPolicialIntegral.Intervention
         {
             GameFiber.StartNew(delegate
             {
-                if (suspect == null || !suspect.Exists()) return;
+                try
+                {
+                    if (suspect == null || !suspect.Exists()) return;
                 
                 Game.DisplaySubtitle("~b~Agente:~w~ Por favor, sople continuamente hasta que yo le diga.", 4000);
                 GameFiber.Sleep(2000);
@@ -60,6 +62,12 @@ namespace SistemaPolicialIntegral.Intervention
                 
                 string msg = string.Format("~b~DRÄGER ALCOTEST~n~~w~Resultado: {0}{1:0.00} mg/l~n~~w~Estado: {2}", color, result, status);
                 Game.DisplayNotification(msg);
+                }
+                catch (System.Threading.ThreadAbortException) { }
+                catch (Exception ex)
+                {
+                    Game.LogTrivial("SPI.AlcoholimeterDrager error: " + ex.Message);
+                }
             });
         }
     }

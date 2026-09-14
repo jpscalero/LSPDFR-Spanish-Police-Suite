@@ -57,7 +57,7 @@ namespace TacticalOps.Scene
                 }
 
                 // Animacion de agacharse / colocar
-                player.Tasks.PlayAnimation("pickup_object", "pickup_low", 4.0f, AnimationFlags.None);
+                TacticalOps.Core.SafeAnimation.Play(player, "pickup_object", "pickup_low", 4.0f, AnimationFlags.None);
 
                 Model propModel = new Model(modelName);
                 propModel.LoadAndWait();
@@ -108,7 +108,7 @@ namespace TacticalOps.Scene
                 Ped player = Game.LocalPlayer.Character;
                 if (player != null && player.Exists() && player.IsAlive)
                 {
-                    player.Tasks.PlayAnimation("pickup_object", "pickup_low", 3.0f, AnimationFlags.None);
+                    TacticalOps.Core.SafeAnimation.Play(player, "pickup_object", "pickup_low", 3.0f, AnimationFlags.None);
                 }
 
                 NativeFunction.Natives.PLAY_SOUND_FRONTEND(-1, "CANCEL", "HUD_FRONTEND_DEFAULT_SOUNDSET", false);

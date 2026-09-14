@@ -23,7 +23,9 @@ namespace SistemaPolicialIntegral.Backup
 
             GameFiber.StartNew(delegate
             {
-                GameFiber.Sleep(2500);
+                try
+                {
+                    GameFiber.Sleep(2500);
 
                 // Vehículo 1 (bloqueo izquierdo)
                 Vehicle v1 = new Vehicle("police3", targetRoadPos.Around(4f), player.Heading + 45f);
@@ -70,6 +72,12 @@ namespace SistemaPolicialIntegral.Backup
 
                 AudioEngine.PlaySirdeeClose();
                 Game.DisplayNotification("~b~[BLOQUEO LISTO]~w~ Patrullas en formación de embudo con agentes armados en cobertura.");
+                }
+                catch (System.Threading.ThreadAbortException) { }
+                catch (Exception ex)
+                {
+                    Game.LogTrivial("SPI.RoadblockManager error: " + ex.Message);
+                }
             });
         }
 

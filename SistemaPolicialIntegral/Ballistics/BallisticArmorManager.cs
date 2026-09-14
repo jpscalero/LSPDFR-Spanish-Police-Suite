@@ -12,7 +12,18 @@ namespace SistemaPolicialIntegral.Ballistics
         public BallisticArmorManager()
         {
             currentArmorHP = ConfigManager.ArmorPlateHP;
-            GameFiber.StartNew(ProcessArmor);
+            GameFiber.StartNew(delegate
+            {
+                try
+                {
+                    ProcessArmor();
+                }
+                catch (System.Threading.ThreadAbortException) { }
+                catch (Exception ex)
+                {
+                    Game.LogTrivial("SPI.BallisticArmorManager fiber error: " + ex.Message);
+                }
+            });
         }
 
         private void ProcessArmor()
@@ -27,32 +38,40 @@ namespace SistemaPolicialIntegral.Ballistics
             {
                 GameFiber.Yield();
 
-                if (Game.LocalPlayer.Character != null && Game.LocalPlayer.Character.Exists() && Game.LocalPlayer.Character.IsAlive)
+                try
                 {
-                    int currentHealth = Game.LocalPlayer.Character.Health;
-
-                    if (currentHealth < lastHealth)
+                    if (Game.LocalPlayer.Character != null && Game.LocalPlayer.Character.Exists() && Game.LocalPlayer.Character.IsAlive)
                     {
-                        int damage = lastHealth - currentHealth;
-                        
-                        if (currentArmorHP > 0)
+                        int currentHealth = Game.LocalPlayer.Character.Health;
+
+                        if (currentHealth < lastHealth)
                         {
-                            if (currentArmorHP >= damage)
+                            int damage = lastHealth - currentHealth;
+                            
+                            if (currentArmorHP > 0)
                             {
-                                currentArmorHP -= damage;
-                                Game.LocalPlayer.Character.Health = lastHealth; // Absorb damage
-                            }
-                            else
-                            {
-                                int remainingDamage = damage - currentArmorHP;
-                                currentArmorHP = 0;
-                                Game.LocalPlayer.Character.Health = lastHealth - remainingDamage;
-                                Game.DisplaySubtitle("~r~¡Chaleco dañado! Placas balísticas agotadas.", 3000);
+                                if (currentArmorHP >= damage)
+                                {
+                                    currentArmorHP -= damage;
+                                    Game.LocalPlayer.Character.Health = lastHealth; // Absorb damage
+                                }
+                                else
+                                {
+                                    int remainingDamage = damage - currentArmorHP;
+                                    currentArmorHP = 0;
+                                    Game.LocalPlayer.Character.Health = lastHealth - remainingDamage;
+                                    Game.DisplaySubtitle("~r~¡Chaleco dañado! Placas balísticas agotadas.", 3000);
+                                }
                             }
                         }
-                    }
 
-                    lastHealth = Game.LocalPlayer.Character.Health;
+                        lastHealth = Game.LocalPlayer.Character.Health;
+                    }
+                }
+                catch (System.Threading.ThreadAbortException) { break; }
+                catch (Exception ex)
+                {
+                    Game.LogTrivial("SPI.BallisticArmorManager loop error: " + ex.Message);
                 }
             }
         }

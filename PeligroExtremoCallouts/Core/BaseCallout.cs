@@ -113,9 +113,17 @@ namespace PeligroExtremoCallouts.Core
                     CurrentPhase = ECalloutPhase.Staging;
                     GameFiber fiber = GameFiber.StartNew(delegate
                     {
-                        InitializeScenario();
-                        CurrentPhase = ECalloutPhase.Infiltration;
-                        OnStagingCompleted();
+                        try
+                        {
+                            InitializeScenario();
+                            CurrentPhase = ECalloutPhase.Infiltration;
+                            OnStagingCompleted();
+                        }
+                        catch (System.Threading.ThreadAbortException) { }
+                        catch (Exception ex)
+                        {
+                            Game.LogTrivial("PeligroExtremoCallouts.BaseCallout.Staging: " + ex.Message);
+                        }
                     });
                     Cleaner.RegisterFiber(fiber);
                 }

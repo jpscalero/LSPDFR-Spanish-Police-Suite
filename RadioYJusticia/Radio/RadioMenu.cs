@@ -82,12 +82,20 @@ namespace RadioYJusticia.Radio
                 {
                     GameFiber.Yield();
 
-                    if (Game.IsKeyDown(ConfigManager.RadioKey))
+                    try
                     {
-                        menu.Visible = !menu.Visible;
-                    }
+                        if (Game.IsKeyDown(ConfigManager.RadioKey))
+                        {
+                            menu.Visible = !menu.Visible;
+                        }
 
-                    pool.ProcessMenus();
+                        pool.ProcessMenus();
+                    }
+                    catch (System.Threading.ThreadAbortException) { break; }
+                    catch (Exception ex)
+                    {
+                        Game.LogTrivial("RadioYJusticia.RadioMenu loop error: " + ex.Message);
+                    }
                 }
             }
             catch (Exception ex)
@@ -101,8 +109,16 @@ namespace RadioYJusticia.Radio
             DispatchVoice.PlayOfficerMessage("ZETA", "Zeta a Sala: 10-8 disponible en sector para cualquier requerimiento.");
             GameFiber.StartNew(delegate
             {
-                GameFiber.Sleep(2500);
-                DispatchVoice.PlayDispatchMessage("Zeta recibido. Queda anotado en servicio y disponible en sector. Buen servicio.");
+                try
+                {
+                    GameFiber.Sleep(2500);
+                    DispatchVoice.PlayDispatchMessage("Zeta recibido. Queda anotado en servicio y disponible en sector. Buen servicio.");
+                }
+                catch (System.Threading.ThreadAbortException) { }
+                catch (Exception ex)
+                {
+                    Game.LogTrivial("RadioYJusticia.HandleReport10_8 fiber error: " + ex.Message);
+                }
             });
         }
 
@@ -119,8 +135,16 @@ namespace RadioYJusticia.Radio
             DispatchVoice.PlayOfficerMessage("ZETA", "Zeta a Sala: 10-20 en " + street + " (Sector " + zone + ").");
             GameFiber.StartNew(delegate
             {
-                GameFiber.Sleep(2500);
-                DispatchVoice.PlayDispatchMessage("Recibido Zeta. Posicion registrada en " + street + " (Demarcacion " + zone + "). Mantengan patrullaje preventivo.");
+                try
+                {
+                    GameFiber.Sleep(2500);
+                    DispatchVoice.PlayDispatchMessage("Recibido Zeta. Posicion registrada en " + street + " (Demarcacion " + zone + "). Mantengan patrullaje preventivo.");
+                }
+                catch (System.Threading.ThreadAbortException) { }
+                catch (Exception ex)
+                {
+                    Game.LogTrivial("RadioYJusticia.HandleReport10_20 fiber error: " + ex.Message);
+                }
             });
         }
 
@@ -129,8 +153,16 @@ namespace RadioYJusticia.Radio
             DispatchVoice.PlayOfficerMessage("ZETA", "Zeta a Sala: 10-38. Iniciamos parada de trafico y control preventivo.");
             GameFiber.StartNew(delegate
             {
-                GameFiber.Sleep(2500);
-                DispatchVoice.PlayDispatchMessage("Recibido 10-38. Control preventivo de trafico anotado en su demarcacion. Extreme precauciones y notifique matricula.");
+                try
+                {
+                    GameFiber.Sleep(2500);
+                    DispatchVoice.PlayDispatchMessage("Recibido 10-38. Control preventivo de trafico anotado en su demarcacion. Extreme precauciones y notifique matricula.");
+                }
+                catch (System.Threading.ThreadAbortException) { }
+                catch (Exception ex)
+                {
+                    Game.LogTrivial("RadioYJusticia.HandleReport10_38 fiber error: " + ex.Message);
+                }
             });
         }
 
@@ -143,15 +175,23 @@ namespace RadioYJusticia.Radio
 
             GameFiber.StartNew(delegate
             {
-                GameFiber.Sleep(2500);
-                if (suspect != null && suspect.Exists())
+                try
                 {
-                    CustodyManager.RegisterDetainee(suspect, null);
-                    DispatchVoice.PlayDispatchMessage("Recibido 10-15. Sala de custodia y calabozos de Comisaria prevenidos para recepcion del detenido. Reloj procesal de 72 horas activado.");
+                    GameFiber.Sleep(2500);
+                    if (suspect != null && suspect.Exists())
+                    {
+                        CustodyManager.RegisterDetainee(suspect, null);
+                        DispatchVoice.PlayDispatchMessage("Recibido 10-15. Sala de custodia y calabozos de Comisaria prevenidos para recepcion del detenido. Reloj procesal de 72 horas activado.");
+                    }
+                    else
+                    {
+                        DispatchVoice.PlayDispatchMessage("Recibido 10-15 preventivo. Comisaria informada de traslado. Diligencias de custodia policial activadas.");
+                    }
                 }
-                else
+                catch (System.Threading.ThreadAbortException) { }
+                catch (Exception ex)
                 {
-                    DispatchVoice.PlayDispatchMessage("Recibido 10-15 preventivo. Comisaria informada de traslado. Diligencias de custodia policial activadas.");
+                    Game.LogTrivial("RadioYJusticia.HandleReport10_15 fiber error: " + ex.Message);
                 }
             });
         }
@@ -165,8 +205,16 @@ namespace RadioYJusticia.Radio
                 DispatchVoice.PlayOfficerMessage("ZETA", "Zeta a Central: Solicitamos consulta telemática de matricula de vehiculo proximo.");
                 GameFiber.StartNew(delegate
                 {
-                    GameFiber.Sleep(2000);
-                    DispatchVoice.PlayDispatchMessage("Central a patrulla: No se detecta ningun vehiculo objetivo en las inmediaciones. Aproximese o enfoque al vehiculo.");
+                    try
+                    {
+                        GameFiber.Sleep(2000);
+                        DispatchVoice.PlayDispatchMessage("Central a patrulla: No se detecta ningun vehiculo objetivo en las inmediaciones. Aproximese o enfoque al vehiculo.");
+                    }
+                    catch (System.Threading.ThreadAbortException) { }
+                    catch (Exception ex)
+                    {
+                        Game.LogTrivial("RadioYJusticia.HandleVehicleCheck fiber error: " + ex.Message);
+                    }
                 });
                 return;
             }
@@ -178,20 +226,28 @@ namespace RadioYJusticia.Radio
 
             GameFiber.StartNew(delegate
             {
-                GameFiber.Sleep(3000);
+                try
+                {
+                    GameFiber.Sleep(3000);
 
-                int roll = random.Next(100);
-                if (roll < 65)
-                {
-                    DispatchVoice.PlayDispatchMessage("SITEL / DGT para matricula " + matricula + " (" + modelo + "): Vehiculo LIMPIO. ITV en vigor, seguro obligatorio contratado y titular sin señalamientos.");
+                    int roll = random.Next(100);
+                    if (roll < 65)
+                    {
+                        DispatchVoice.PlayDispatchMessage("SITEL / DGT para matricula " + matricula + " (" + modelo + "): Vehiculo LIMPIO. ITV en vigor, seguro obligatorio contratado y titular sin señalamientos.");
+                    }
+                    else if (roll < 85)
+                    {
+                        DispatchVoice.PlayDispatchMessage("¡ATENCION PATRULLA! DGT informa sobre " + matricula + ": ITV CADUCADA y SEGURO SIN VIGENCIA activa en Registro General. Procedan a sancion administrativa.");
+                    }
+                    else
+                    {
+                        DispatchVoice.PlayDispatchMessage("¡¡ALERTA MAXIMA POLICIAL!! Matricula " + matricula + " (" + modelo + "): CONSTA SEÑALAMIENTO JUDICIAL POR ROBO / SUSTRACCION. Titular con orden de busca y captura. Procedan con extrema cautela.");
+                    }
                 }
-                else if (roll < 85)
+                catch (System.Threading.ThreadAbortException) { }
+                catch (Exception ex)
                 {
-                    DispatchVoice.PlayDispatchMessage("¡ATENCION PATRULLA! DGT informa sobre " + matricula + ": ITV CADUCADA y SEGURO SIN VIGENCIA activa en Registro General. Procedan a sancion administrativa.");
-                }
-                else
-                {
-                    DispatchVoice.PlayDispatchMessage("¡¡ALERTA MAXIMA POLICIAL!! Matricula " + matricula + " (" + modelo + "): CONSTA SEÑALAMIENTO JUDICIAL POR ROBO / SUSTRACCION. Titular con orden de busca y captura. Procedan con extrema cautela.");
+                    Game.LogTrivial("RadioYJusticia.HandleVehicleCheck lookup fiber error: " + ex.Message);
                 }
             });
         }
@@ -205,8 +261,16 @@ namespace RadioYJusticia.Radio
                 DispatchVoice.PlayOfficerMessage("ZETA", "Zeta a Central: Solicitamos comprobacion telemática de identidad y requisitorias.");
                 GameFiber.StartNew(delegate
                 {
-                    GameFiber.Sleep(2000);
-                    DispatchVoice.PlayDispatchMessage("Central informa: No se detecta ningun sospechoso a distancia de identificacion. Aproximese al individuo para lectura de DNI.");
+                    try
+                    {
+                        GameFiber.Sleep(2000);
+                        DispatchVoice.PlayDispatchMessage("Central informa: No se detecta ningun sospechoso a distancia de identificacion. Aproximese al individuo para lectura de DNI.");
+                    }
+                    catch (System.Threading.ThreadAbortException) { }
+                    catch (Exception ex)
+                    {
+                        Game.LogTrivial("RadioYJusticia.HandlePedCheck fiber error: " + ex.Message);
+                    }
                 });
                 return;
             }
@@ -234,16 +298,24 @@ namespace RadioYJusticia.Radio
 
             GameFiber.StartNew(delegate
             {
-                GameFiber.Sleep(3000);
+                try
+                {
+                    GameFiber.Sleep(3000);
 
-                if (wantedLspdfr || esReincidente || random.Next(100) < 25)
-                {
-                    string delitoAnterior = esReincidente ? "antecedentes previos en historial" : "orden de busca y captura de Juzgado de Instruccion";
-                    DispatchVoice.PlayDispatchMessage("¡ATENCION PATRULLA! Sujeto " + nombre + " (DNI " + dni + "): REQUISITORIA POSITIVA. Consta " + delitoAnterior + ". Procedan a retencion preventiva con medidas de seguridad.");
+                    if (wantedLspdfr || esReincidente || random.Next(100) < 25)
+                    {
+                        string delitoAnterior = esReincidente ? "antecedentes previos en historial" : "orden de busca y captura de Juzgado de Instruccion";
+                        DispatchVoice.PlayDispatchMessage("¡ATENCION PATRULLA! Sujeto " + nombre + " (DNI " + dni + "): REQUISITORIA POSITIVA. Consta " + delitoAnterior + ". Procedan a retencion preventiva con medidas de seguridad.");
+                    }
+                    else
+                    {
+                        DispatchVoice.PlayDispatchMessage("Central informa: Ciudadano " + nombre + " (DNI " + dni + "): Sin antecedentes ni requisitorias judiciales pendientes en el sistema.");
+                    }
                 }
-                else
+                catch (System.Threading.ThreadAbortException) { }
+                catch (Exception ex)
                 {
-                    DispatchVoice.PlayDispatchMessage("Central informa: Ciudadano " + nombre + " (DNI " + dni + "): Sin antecedentes ni requisitorias judiciales pendientes en el sistema.");
+                    Game.LogTrivial("RadioYJusticia.HandlePedCheck lookup fiber error: " + ex.Message);
                 }
             });
         }
@@ -253,8 +325,16 @@ namespace RadioYJusticia.Radio
             DispatchVoice.PlayOfficerMessage("ZETA", "Zeta a Sala: 10-7. Entramos en pausa reglamentaria / fuera de servicio temporal.");
             GameFiber.StartNew(delegate
             {
-                GameFiber.Sleep(2500);
-                DispatchVoice.PlayDispatchMessage("Recibido Zeta. Queda registrado en 10-7 fuera de servicio temporal. Notifique reincorporacion mediante 10-8.");
+                try
+                {
+                    GameFiber.Sleep(2500);
+                    DispatchVoice.PlayDispatchMessage("Recibido Zeta. Queda registrado en 10-7 fuera de servicio temporal. Notifique reincorporacion mediante 10-8.");
+                }
+                catch (System.Threading.ThreadAbortException) { }
+                catch (Exception ex)
+                {
+                    Game.LogTrivial("RadioYJusticia.HandleReport10_7 fiber error: " + ex.Message);
+                }
             });
         }
 

@@ -15,7 +15,9 @@ namespace RadioYJusticia.Justice
 
             GameFiber.StartNew(delegate
             {
-                // Breve espera de deliberación del Juez de Instrucción de Guardia
+                try
+                {
+                    // Breve espera de deliberación del Juez de Instrucción de Guardia
                 GameFiber.Sleep(5000);
 
                 int roll = random.Next(100);
@@ -84,6 +86,12 @@ namespace RadioYJusticia.Justice
                 if (pasaAJuicio)
                 {
                     TrialSimulator.SimulateOralTrial(record, resolucion);
+                }
+                }
+                catch (System.Threading.ThreadAbortException) { }
+                catch (Exception ex)
+                {
+                    Game.LogTrivial("RadioYJusticia.JudgeDecision fiber error: " + ex.Message);
                 }
             });
         }

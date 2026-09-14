@@ -54,70 +54,96 @@ namespace SistemaPolicialIntegral.Backup
 
             menu.OnItemSelect += OnItemSelect;
 
-            GameFiber.StartNew(ProcessMenu);
+            GameFiber.StartNew(delegate
+            {
+                try
+                {
+                    ProcessMenu();
+                }
+                catch (System.Threading.ThreadAbortException) { }
+                catch (Exception ex)
+                {
+                    Game.LogTrivial("SPI.SirdeeBackupMenu ProcessMenu fiber error: " + ex.Message);
+                }
+            });
         }
 
         private void OnItemSelect(UIMenu sender, UIMenuItem selectedItem, int index)
         {
-            menu.Visible = false;
+            try
+            {
+                menu.Visible = false;
 
-            if (index == 9)
-            {
-                SpikeStripManager.DeploySpikeStrips();
-                return;
-            }
-            if (index == 10)
-            {
-                SpikeStripManager.RemoveSpikeStrips();
-                return;
-            }
-            if (index == 11)
-            {
-                RoadblockManager.RequestTacticalRoadblock();
-                return;
-            }
-            if (index == 12)
-            {
-                RoadblockManager.ClearRoadblock();
-                return;
-            }
-            if (index == 13)
-            {
-                PursuitTacticsManager.PerformPitManeuver();
-                return;
-            }
-            if (index == 14)
-            {
-                PursuitTacticsManager.OrderBoxingIn();
-                return;
-            }
-
-            AudioEngine.PlaySirdeeOpen();
-            string unidad = selectedItem.Text;
-            int eta = new Random().Next(10, 25);
-            Game.DisplaySubtitle("~b~[SIRDEE]~w~ Solicitando " + unidad + "... ETA: " + eta + " segundos.", 5000);
-
-            GameFiber.StartNew(delegate
-            {
-                GameFiber.Sleep(eta * 1000);
-
-                if (index == 0) UnitSpawner.SpawnPatrullaZeta();
-                else if (index == 1) UnitSpawner.SpawnATGCTrafico();
-                else if (index == 2) UnitSpawner.SpawnUPRAntidisturbios();
-                else if (index == 3) UnitSpawner.SpawnGEOTactico();
-                else if (index == 4) UnitSpawner.SpawnK9Canino();
-                else if (index == 5) UnitSpawner.SpawnHelicopteroCondor();
-                else if (index == 6)
+                if (index == 9)
                 {
-                    Vehicle closest = FindNearbyVehicle(10f);
-                    if (closest != null && closest.Exists()) MunicipalFlatbedTow.RequestTow(closest);
-                    else Game.DisplayNotification("~r~No hay vehiculo cercano para la grua.");
+                    SpikeStripManager.DeploySpikeStrips();
+                    return;
                 }
-                else if (index == 7) SamurAmbulanceService.RequestAmbulance(Game.LocalPlayer.Character.Position);
-                else if (index == 8) ForensicJudicialVan.RequestForensicUnit(Game.LocalPlayer.Character.Position);
+                if (index == 10)
+                {
+                    SpikeStripManager.RemoveSpikeStrips();
+                    return;
+                }
+                if (index == 11)
+                {
+                    RoadblockManager.RequestTacticalRoadblock();
+                    return;
+                }
+                if (index == 12)
+                {
+                    RoadblockManager.ClearRoadblock();
+                    return;
+                }
+                if (index == 13)
+                {
+                    PursuitTacticsManager.PerformPitManeuver();
+                    return;
+                }
+                if (index == 14)
+                {
+                    PursuitTacticsManager.OrderBoxingIn();
+                    return;
+                }
 
-                AudioEngine.PlaySirdeeClose();
-            });
+                AudioEngine.PlaySirdeeOpen();
+                string unidad = selectedItem.Text;
+                int eta = new Random().Next(10, 25);
+                Game.DisplaySubtitle("~b~[SIRDEE]~w~ Solicitando " + unidad + "... ETA: " + eta + " segundos.", 5000);
+
+                GameFiber.StartNew(delegate
+                {
+                    try
+                    {
+                        GameFiber.Sleep(eta * 1000);
+
+                        if (index == 0) UnitSpawner.SpawnPatrullaZeta();
+                        else if (index == 1) UnitSpawner.SpawnATGCTrafico();
+                        else if (index == 2) UnitSpawner.SpawnUPRAntidisturbios();
+                        else if (index == 3) UnitSpawner.SpawnGEOTactico();
+                        else if (index == 4) UnitSpawner.SpawnK9Canino();
+                        else if (index == 5) UnitSpawner.SpawnHelicopteroCondor();
+                        else if (index == 6)
+                        {
+                            Vehicle closest = FindNearbyVehicle(10f);
+                            if (closest != null && closest.Exists()) MunicipalFlatbedTow.RequestTow(closest);
+                            else Game.DisplayNotification("~r~No hay vehiculo cercano para la grua.");
+                        }
+                        else if (index == 7) SamurAmbulanceService.RequestAmbulance(Game.LocalPlayer.Character.Position);
+                        else if (index == 8) ForensicJudicialVan.RequestForensicUnit(Game.LocalPlayer.Character.Position);
+
+                        AudioEngine.PlaySirdeeClose();
+                    }
+                    catch (System.Threading.ThreadAbortException) { }
+                    catch (Exception ex)
+                    {
+                        Game.LogTrivial("SPI.SirdeeBackupMenu.OnItemSelect fiber error: " + ex.Message);
+                    }
+                });
+            }
+            catch (Exception ex)
+            {
+                Game.LogTrivial("SPI.SirdeeBackupMenu OnItemSelect error: " + ex.Message);
+            }
         }
 
         private void ProcessMenu()
@@ -125,11 +151,20 @@ namespace SistemaPolicialIntegral.Backup
             while (true)
             {
                 GameFiber.Yield();
-                pool.ProcessMenus();
-                
-                if (Game.IsKeyDown(ConfigManager.BackupKey))
+
+                try
                 {
-                    menu.Visible = !menu.Visible;
+                    pool.ProcessMenus();
+                    
+                    if (Game.IsKeyDown(ConfigManager.BackupKey))
+                    {
+                        menu.Visible = !menu.Visible;
+                    }
+                }
+                catch (System.Threading.ThreadAbortException) { break; }
+                catch (Exception ex)
+                {
+                    Game.LogTrivial("SPI.SirdeeBackupMenu loop error: " + ex.Message);
                 }
             }
         }

@@ -109,9 +109,17 @@ namespace TacticalAndFederalCallouts.Core
                     CurrentPhase = ECalloutPhase.Staging;
                     GameFiber fiber = GameFiber.StartNew(delegate
                     {
-                        InitializeScenario();
-                        CurrentPhase = ECalloutPhase.Infiltration;
-                        OnStagingCompleted();
+                        try
+                        {
+                            InitializeScenario();
+                            CurrentPhase = ECalloutPhase.Infiltration;
+                            OnStagingCompleted();
+                        }
+                        catch (System.Threading.ThreadAbortException) { }
+                        catch (Exception ex)
+                        {
+                            Game.LogTrivial("TacticalAndFederalCallouts.BaseCallout.Staging: " + ex.Message);
+                        }
                     });
                     Cleaner.RegisterFiber(fiber);
                 }

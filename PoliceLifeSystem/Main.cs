@@ -63,36 +63,60 @@ namespace PoliceLifeSystem
                     // Loop de salario y gastos periódicos
                     GameFiber.StartNew(delegate
                     {
-                        while (true)
+                        try
                         {
-                            // En GTA V, 1 minuto de juego equivale a 2000 milisegundos reales (48 min juego = 96 seg reales)
-                            int intervalMs = ConfigManager.SalaryIntervalMinutes * 2000;
-                            if (intervalMs < 10000) intervalMs = 10000;
-
-                            GameFiber.Sleep(intervalMs);
-
-                            try
+                            while (true)
                             {
-                                SalaryManager.ProcessSalaryPayment();
-                                ExpenseTracker.ProcessExpenses();
+                                // En GTA V, 1 minuto de juego equivale a 2000 milisegundos reales (48 min juego = 96 seg reales)
+                                int intervalMs = ConfigManager.SalaryIntervalMinutes * 2000;
+                                if (intervalMs < 10000) intervalMs = 10000;
+
+                                GameFiber.Sleep(intervalMs);
+
+                                try
+                                {
+                                    SalaryManager.ProcessSalaryPayment();
+                                    ExpenseTracker.ProcessExpenses();
+                                }
+                                catch (Exception ex)
+                                {
+                                    Game.LogTrivial("PoliceLifeSystem: Error en ciclo de salario/gastos: " + ex.Message);
+                                }
                             }
-                            catch (Exception ex)
-                            {
-                                Game.LogTrivial("PoliceLifeSystem: Error en ciclo de salario/gastos: " + ex.Message);
-                            }
+                        }
+                        catch (System.Threading.ThreadAbortException) { }
+                        catch (Exception ex)
+                        {
+                            Game.LogTrivial("PoliceLifeSystem: Error critico en fibra de salario: " + ex.Message);
                         }
                     });
 
                     // Loop para escuchar tecla Add (NumPad +) y abrir Menú General
                     GameFiber.StartNew(delegate
                     {
-                        ProcessGeneralMenu();
+                        try
+                        {
+                            ProcessGeneralMenu();
+                        }
+                        catch (System.Threading.ThreadAbortException) { }
+                        catch (Exception ex)
+                        {
+                            Game.LogTrivial("PoliceLifeSystem: Error critico en fibra de ProcessGeneralMenu: " + ex.Message);
+                        }
                     });
 
                     // Loop para escuchar tecla Divide (NumPad /) y abrir Menú de Documentos Policiales
                     GameFiber.StartNew(delegate
                     {
-                        DocumentGenerator.Process();
+                        try
+                        {
+                            DocumentGenerator.Process();
+                        }
+                        catch (System.Threading.ThreadAbortException) { }
+                        catch (Exception ex)
+                        {
+                            Game.LogTrivial("PoliceLifeSystem: Error critico en fibra de DocumentGenerator: " + ex.Message);
+                        }
                     });
 
                     // Notificación en pantalla de carga completa
@@ -240,22 +264,30 @@ namespace PoliceLifeSystem
             {
                 GameFiber.Yield();
 
-                if (Game.IsKeyDown(ConfigManager.MenuKey))
+                try
                 {
-                    if (!mainMenu.Visible && !carreraMenu.Visible && !shopMenu.Visible && !statsMenu.Visible)
+                    if (Game.IsKeyDown(ConfigManager.MenuKey))
                     {
-                        mainMenu.Visible = true;
+                        if (!mainMenu.Visible && !carreraMenu.Visible && !shopMenu.Visible && !statsMenu.Visible)
+                        {
+                            mainMenu.Visible = true;
+                        }
+                        else
+                        {
+                            mainMenu.Visible = false;
+                            carreraMenu.Visible = false;
+                            shopMenu.Visible = false;
+                            statsMenu.Visible = false;
+                        }
                     }
-                    else
-                    {
-                        mainMenu.Visible = false;
-                        carreraMenu.Visible = false;
-                        shopMenu.Visible = false;
-                        statsMenu.Visible = false;
-                    }
-                }
 
-                pool.ProcessMenus();
+                    pool.ProcessMenus();
+                }
+                catch (System.Threading.ThreadAbortException) { break; }
+                catch (Exception ex)
+                {
+                    Game.LogTrivial("PLS.ProcessGeneralMenu loop error: " + ex.Message);
+                }
             }
         }
     }

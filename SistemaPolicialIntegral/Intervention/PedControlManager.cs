@@ -131,11 +131,19 @@ namespace SistemaPolicialIntegral.Intervention
 
                 GameFiber.StartNew(delegate
                 {
-                    GameFiber.Sleep(2000);
-                    if (seatedSuspect != null && seatedSuspect.Exists())
+                    try
                     {
-                        NativeFunction.Natives.SET_ENABLE_HANDCUFFS(seatedSuspect, true);
-                        seatedSuspect.Tasks.PutHandsUp(-1, Game.LocalPlayer.Character);
+                        GameFiber.Sleep(2000);
+                        if (seatedSuspect != null && seatedSuspect.Exists())
+                        {
+                            NativeFunction.Natives.SET_ENABLE_HANDCUFFS(seatedSuspect, true);
+                            seatedSuspect.Tasks.PutHandsUp(-1, Game.LocalPlayer.Character);
+                        }
+                    }
+                    catch (System.Threading.ThreadAbortException) { }
+                    catch (Exception ex)
+                    {
+                        Game.LogTrivial("SPI.PedControlManager fiber error: " + ex.Message);
                     }
                 });
 

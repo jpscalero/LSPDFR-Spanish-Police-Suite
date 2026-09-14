@@ -64,161 +64,200 @@ namespace SistemaPolicialIntegral.Intervention
 
             menu.OnItemSelect += delegate (UIMenu sender, UIMenuItem selectedItem, int index)
             {
-                AudioEngine.PlayMenuSelect();
-                if (selectedItem == itemDni)
+                try
                 {
-                    if (targetPed != null && targetPed.Exists()) DniVerification.VerifyIdentity(targetPed);
-                }
-                else if (selectedItem == itemAlcoholemia)
-                {
-                    if (targetPed != null && targetPed.Exists()) AlcoholimeterDrager.PerformTest(targetPed);
-                }
-                else if (selectedItem == itemDrogas)
-                {
-                    if (targetPed != null && targetPed.Exists()) DrugTest5000.PerformTest(targetPed);
-                }
-                else if (selectedItem == itemCacheo)
-                {
-                    if (targetPed != null && targetPed.Exists()) FriskSearchManager.FriskPed(targetPed);
-                }
-                else if (selectedItem == itemRegistroVeh)
-                {
-                    Vehicle veh = FindClosestVehicle(6f);
-                    if (veh != null && veh.Exists()) FriskSearchManager.SearchVehicle(veh);
-                    else Game.DisplayNotification("~r~No hay ningun vehiculo lo suficientemente cerca.");
-                }
-                else if (selectedItem == itemDerechos)
-                {
-                    if (targetPed != null && targetPed.Exists()) RightsManager.ReadRights(targetPed);
-                }
-                else if (selectedItem == itemDetener)
-                {
-                    if (targetPed != null && targetPed.Exists())
+                    AudioEngine.PlayMenuSelect();
+                    if (selectedItem == itemDni)
                     {
-                        NativeFunction.Natives.SET_ENABLE_HANDCUFFS(targetPed, true);
-                        targetPed.Tasks.PutHandsUp(-1, Game.LocalPlayer.Character);
-                        Game.DisplayNotification("~b~Sujeto engrilletado.");
+                        if (targetPed != null && targetPed.Exists()) DniVerification.VerifyIdentity(targetPed);
                     }
-                }
-                else if (selectedItem == itemEscoltar)
-                {
-                    if (targetPed != null && targetPed.Exists())
+                    else if (selectedItem == itemAlcoholemia)
                     {
-                        PedControlManager.ToggleGrabPed(targetPed);
+                        if (targetPed != null && targetPed.Exists()) AlcoholimeterDrager.PerformTest(targetPed);
                     }
-                    else if (PedControlManager.IsEscorting)
+                    else if (selectedItem == itemDrogas)
                     {
-                        PedControlManager.ReleaseGrabbedPed();
+                        if (targetPed != null && targetPed.Exists()) DrugTest5000.PerformTest(targetPed);
                     }
-                }
-                else if (selectedItem == itemMeterPatrulla)
-                {
-                    Vehicle veh = FindClosestVehicle(8f);
-                    Ped p = PedControlManager.GrabbedPed != null ? PedControlManager.GrabbedPed : targetPed;
-                    if (p != null && p.Exists() && veh != null && veh.Exists())
+                    else if (selectedItem == itemCacheo)
                     {
-                        PedControlManager.PutInVehicle(p, veh);
+                        if (targetPed != null && targetPed.Exists()) FriskSearchManager.FriskPed(targetPed);
                     }
-                    else
+                    else if (selectedItem == itemRegistroVeh)
                     {
-                        Game.DisplayNotification("~r~Se requiere un detenido y un vehiculo patrulla cercano.");
+                        Vehicle veh = FindClosestVehicle(6f);
+                        if (veh != null && veh.Exists()) FriskSearchManager.SearchVehicle(veh);
+                        else Game.DisplayNotification("~r~No hay ningun vehiculo lo suficientemente cerca.");
                     }
-                }
-                else if (selectedItem == itemSacarPatrulla)
-                {
-                    Vehicle veh = FindClosestVehicle(8f);
-                    if (veh != null && veh.Exists())
+                    else if (selectedItem == itemDerechos)
                     {
-                        PedControlManager.RemoveFromVehicle(veh);
+                        if (targetPed != null && targetPed.Exists()) RightsManager.ReadRights(targetPed);
                     }
-                    else
+                    else if (selectedItem == itemDetener)
                     {
-                        Game.DisplayNotification("~r~No hay patrullero cerca.");
+                        if (targetPed != null && targetPed.Exists())
+                        {
+                            NativeFunction.Natives.SET_ENABLE_HANDCUFFS(targetPed, true);
+                            targetPed.Tasks.PutHandsUp(-1, Game.LocalPlayer.Character);
+                            Game.DisplayNotification("~b~Sujeto engrilletado.");
+                        }
                     }
-                }
-                else if (selectedItem == itemArrodillar)
-                {
-                    if (targetPed != null && targetPed.Exists()) PedControlManager.MakePedKneel(targetPed);
-                }
-                else if (selectedItem == itemSentar)
-                {
-                    if (targetPed != null && targetPed.Exists()) PedControlManager.MakePedSitOnCurb(targetPed);
-                }
-                else if (selectedItem == itemPonerPie)
-                {
-                    if (targetPed != null && targetPed.Exists()) PedControlManager.MakePedStandUp(targetPed);
-                }
-                else if (selectedItem == itemVentanilla)
-                {
-                    Vehicle veh = FindClosestVehicle(5f);
-                    if (veh != null && veh.Exists()) TrafficStopInteraction.InteractWithDriver(veh);
-                    else Game.DisplayNotification("~r~No hay ningun vehiculo detenido cerca.");
-                }
-                else if (selectedItem == itemBajarCoche)
-                {
-                    Vehicle veh = FindClosestVehicle(5f);
-                    if (veh != null && veh.Exists()) TrafficStopInteraction.OrderDriverExit(veh);
-                }
-                else if (selectedItem == itemLiberar)
-                {
-                    if (targetPed != null && targetPed.Exists())
+                    else if (selectedItem == itemEscoltar)
                     {
-                        if (PedControlManager.IsEscorting && PedControlManager.GrabbedPed == targetPed)
+                        if (targetPed != null && targetPed.Exists())
+                        {
+                            PedControlManager.ToggleGrabPed(targetPed);
+                        }
+                        else if (PedControlManager.IsEscorting)
                         {
                             PedControlManager.ReleaseGrabbedPed();
                         }
-                        NativeFunction.Natives.SET_ENABLE_HANDCUFFS(targetPed, false);
-                        targetPed.Tasks.Clear();
-                        targetPed.Dismiss();
-                        Game.DisplayNotification("~g~Sujeto liberado.");
+                        else
+                        {
+                            Game.DisplayNotification("~y~No hay ningún sospechoso seleccionado para escoltar.");
+                        }
                     }
+                    else if (selectedItem == itemMeterPatrulla)
+                    {
+                        Vehicle closestPatrol = FindClosestVehicle(6f);
+                        Ped p = PedControlManager.GrabbedPed != null ? PedControlManager.GrabbedPed : targetPed;
+                        if (p != null && p.Exists() && closestPatrol != null && closestPatrol.Exists())
+                        {
+                            PedControlManager.PutInVehicle(p, closestPatrol);
+                        }
+                        else
+                        {
+                            Game.DisplayNotification("~r~Se requiere un detenido y un vehiculo patrulla cercano.");
+                        }
+                    }
+                    else if (selectedItem == itemSacarPatrulla)
+                    {
+                        Vehicle closestPatrol = FindClosestVehicle(6f);
+                        if (closestPatrol != null && closestPatrol.Exists())
+                        {
+                            PedControlManager.RemoveFromVehicle(closestPatrol);
+                        }
+                        else
+                        {
+                            Game.DisplayNotification("~r~No hay ningún coche patrulla cerca para apear sospechosos.");
+                        }
+                    }
+                    else if (selectedItem == itemArrodillar)
+                    {
+                        if (targetPed != null && targetPed.Exists())
+                        {
+                            PedControlManager.MakePedKneel(targetPed);
+                        }
+                        else if (PedControlManager.IsEscorting && PedControlManager.GrabbedPed != null)
+                        {
+                            PedControlManager.MakePedKneel(PedControlManager.GrabbedPed);
+                        }
+                    }
+                    else if (selectedItem == itemSentar)
+                    {
+                        if (targetPed != null && targetPed.Exists())
+                        {
+                            PedControlManager.MakePedSitOnCurb(targetPed);
+                        }
+                        else if (PedControlManager.IsEscorting && PedControlManager.GrabbedPed != null)
+                        {
+                            PedControlManager.MakePedSitOnCurb(PedControlManager.GrabbedPed);
+                        }
+                    }
+                    else if (selectedItem == itemPonerPie)
+                    {
+                        if (targetPed != null && targetPed.Exists())
+                        {
+                            PedControlManager.MakePedStandUp(targetPed);
+                        }
+                    }
+                    else if (selectedItem == itemVentanilla)
+                    {
+                        Vehicle veh = FindClosestVehicle(5f);
+                        if (veh != null && veh.Exists()) TrafficStopInteraction.InteractWithDriver(veh);
+                        else Game.DisplayNotification("~r~No hay ningun vehiculo detenido cerca.");
+                    }
+                    else if (selectedItem == itemBajarCoche)
+                    {
+                        Vehicle veh = FindClosestVehicle(5f);
+                        if (veh != null && veh.Exists()) TrafficStopInteraction.OrderDriverExit(veh);
+                    }
+                    else if (selectedItem == itemLiberar)
+                    {
+                        if (targetPed != null && targetPed.Exists())
+                        {
+                            if (PedControlManager.IsEscorting && PedControlManager.GrabbedPed == targetPed)
+                            {
+                                PedControlManager.ReleaseGrabbedPed();
+                            }
+                            NativeFunction.Natives.SET_ENABLE_HANDCUFFS(targetPed, false);
+                            targetPed.Tasks.Clear();
+                            targetPed.Dismiss();
+                            Game.DisplayNotification("~g~Sujeto liberado.");
+                        }
+                    }
+                    menu.Visible = false;
                 }
-                menu.Visible = false;
+                catch (Exception ex)
+                {
+                    Game.LogTrivial("SPI.InterventionMenu OnItemSelect error: " + ex.Message);
+                }
             };
 
             while (true)
             {
                 GameFiber.Yield();
 
-                if (Game.IsKeyDown(ConfigManager.InterventionKey))
+                try
                 {
-                    if (!menu.Visible)
+                    if (Game.IsKeyDown(ConfigManager.InterventionKey))
                     {
-                        Ped[] peds = Game.LocalPlayer.Character.GetNearbyPeds(10);
-                        targetPed = null;
-                        float closestDist = 9999f;
-                        foreach (Ped p in peds)
+                        if (!menu.Visible)
                         {
-                            if (p != null && p.Exists() && p != Game.LocalPlayer.Character && p.IsHuman)
+                            Ped[] peds = Game.LocalPlayer.Character.GetNearbyPeds(10);
+                            targetPed = null;
+                            float closestDist = 9999f;
+                            if (peds != null)
                             {
-                                float dist = Game.LocalPlayer.Character.DistanceTo(p);
-                                if (dist < 4f && dist < closestDist)
+                                foreach (Ped p in peds)
                                 {
-                                    closestDist = dist;
-                                    targetPed = p;
+                                    if (p != null && p.Exists() && p != Game.LocalPlayer.Character && p.IsHuman)
+                                    {
+                                        float dist = Game.LocalPlayer.Character.DistanceTo(p);
+                                        if (dist < 4f && dist < closestDist)
+                                        {
+                                            closestDist = dist;
+                                            targetPed = p;
+                                        }
+                                    }
                                 }
                             }
-                        }
 
-                        Vehicle nearbyVeh = FindClosestVehicle(5f);
+                            Vehicle nearbyVeh = FindClosestVehicle(5f);
 
-                        // Si hay un ped cerca O un vehiculo cerca O estamos escoltando, abrir menu
-                        if (targetPed != null || nearbyVeh != null || PedControlManager.IsEscorting)
-                        {
-                            menu.Visible = true;
+                            // Si hay un ped cerca O un vehiculo cerca O estamos escoltando, abrir menu
+                            if (targetPed != null || nearbyVeh != null || PedControlManager.IsEscorting)
+                            {
+                                menu.Visible = true;
+                            }
+                            else
+                            {
+                                Game.DisplayNotification("~y~No hay nadie ni ningun vehiculo lo suficientemente cerca para intervenir.");
+                            }
                         }
                         else
                         {
-                            Game.DisplayNotification("~y~No hay nadie ni ningun vehiculo lo suficientemente cerca para intervenir.");
+                            menu.Visible = false;
                         }
                     }
-                    else
-                    {
-                        menu.Visible = false;
-                    }
-                }
 
-                pool.ProcessMenus();
+                    pool.ProcessMenus();
+                }
+                catch (System.Threading.ThreadAbortException) { break; }
+                catch (Exception ex)
+                {
+                    Game.LogTrivial("SPI.InterventionMenu loop error: " + ex.Message);
+                }
             }
         }
 

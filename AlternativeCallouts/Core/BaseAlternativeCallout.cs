@@ -112,7 +112,19 @@ namespace AlternativeCallouts.Core
                 if (CurrentPhase == ECalloutPhase.EnRoute && distance <= 350f)
                 {
                     CurrentPhase = ECalloutPhase.Staging;
-                    GameFiber fiber = GameFiber.StartNew(delegate { InitializeScenario(); CurrentPhase = ECalloutPhase.Arrival; });
+                    GameFiber fiber = GameFiber.StartNew(delegate
+                    {
+                        try
+                        {
+                            InitializeScenario();
+                            CurrentPhase = ECalloutPhase.Arrival;
+                        }
+                        catch (System.Threading.ThreadAbortException) { }
+                        catch (Exception ex)
+                        {
+                            Game.LogTrivial("AlternativeCallouts.BaseCallout.Staging: " + ex.Message);
+                        }
+                    });
                     Cleaner.RegisterFiber(fiber);
                 }
 

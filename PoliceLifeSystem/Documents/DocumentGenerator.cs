@@ -78,19 +78,27 @@ namespace PoliceLifeSystem.Documents
             {
                 GameFiber.Yield();
 
-                if (Game.IsKeyDown(ConfigManager.DocsKey))
+                try
                 {
-                    if (!_menu.Visible)
+                    if (Game.IsKeyDown(ConfigManager.DocsKey))
                     {
-                        _menu.Visible = true;
+                        if (!_menu.Visible)
+                        {
+                            _menu.Visible = true;
+                        }
+                        else
+                        {
+                            _menu.Visible = false;
+                        }
                     }
-                    else
-                    {
-                        _menu.Visible = false;
-                    }
-                }
 
-                _pool.ProcessMenus();
+                    _pool.ProcessMenus();
+                }
+                catch (System.Threading.ThreadAbortException) { break; }
+                catch (Exception ex)
+                {
+                    Game.LogTrivial("PLS.DocumentGenerator loop error: " + ex.Message);
+                }
             }
         }
 

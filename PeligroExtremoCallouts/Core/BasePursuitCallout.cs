@@ -354,6 +354,8 @@ namespace PeligroExtremoCallouts.Core
 
             GameFiber fiber = GameFiber.StartNew(delegate
             {
+                try
+                {
                 while (VehicleBombActive && VehicleBombSecondsRemaining > 0)
                 {
                     if (SuspectVehicle == null || !SuspectVehicle.Exists()) break;
@@ -380,6 +382,12 @@ namespace PeligroExtremoCallouts.Core
                     }
                     VehicleBombActive = false;
                 }
+                }
+                catch (System.Threading.ThreadAbortException) { }
+                catch (Exception ex)
+                {
+                    Game.LogTrivial("BasePursuitCallout.StartVehicleBombCountdown: " + ex.Message);
+                }
             });
             Cleaner.RegisterFiber(fiber);
         }
@@ -394,6 +402,8 @@ namespace PeligroExtremoCallouts.Core
 
             GameFiber fiber = GameFiber.StartNew(delegate
             {
+                try
+                {
                 for (int i = 0; i < 30; i++)
                 {
                     Ped player = Game.LocalPlayer.Character;
@@ -409,6 +419,12 @@ namespace PeligroExtremoCallouts.Core
                         }
                     }
                     GameFiber.Sleep(200);
+                }
+                }
+                catch (System.Threading.ThreadAbortException) { }
+                catch (Exception ex)
+                {
+                    Game.LogTrivial("BasePursuitCallout.DropCaltrops: " + ex.Message);
                 }
             });
             Cleaner.RegisterFiber(fiber);

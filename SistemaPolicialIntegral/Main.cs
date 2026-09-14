@@ -54,43 +54,99 @@ namespace SistemaPolicialIntegral
                     // Módulo 1: Menú de Intervención Policial (F9)
                     GameFiber.StartNew(delegate
                     {
-                        InterventionMenu.Process();
+                        try
+                        {
+                            InterventionMenu.Process();
+                        }
+                        catch (System.Threading.ThreadAbortException) { }
+                        catch (Exception ex)
+                        {
+                            Game.LogTrivial("SPI.InterventionMenu fatal fiber error: " + ex.Message);
+                        }
                     });
 
                     // Módulo 2: Terminal SITEL / DGT (F10)
                     GameFiber.StartNew(delegate
                     {
-                        SitelComputerMenu.Process();
+                        try
+                        {
+                            SitelComputerMenu.Process();
+                        }
+                        catch (System.Threading.ThreadAbortException) { }
+                        catch (Exception ex)
+                        {
+                            Game.LogTrivial("SPI.SitelComputerMenu fatal fiber error: " + ex.Message);
+                        }
                     });
 
                     // Módulo 3: Despliegue SIRDEE — Refuerzos (Insert)
                     GameFiber.StartNew(delegate
                     {
-                        new SirdeeBackupMenu();
+                        try
+                        {
+                            new SirdeeBackupMenu();
+                        }
+                        catch (System.Threading.ThreadAbortException) { }
+                        catch (Exception ex)
+                        {
+                            Game.LogTrivial("SPI.SirdeeBackupMenu fatal fiber error: " + ex.Message);
+                        }
                     });
 
                     // Módulo 4: Balística — Taser NMI (monitoreo continuo)
                     GameFiber.StartNew(delegate
                     {
-                        new TaserNmiController();
+                        try
+                        {
+                            new TaserNmiController();
+                        }
+                        catch (System.Threading.ThreadAbortException) { }
+                        catch (Exception ex)
+                        {
+                            Game.LogTrivial("SPI.TaserNmiController fatal fiber error: " + ex.Message);
+                        }
                     });
 
                     // Módulo 4: Balística — Spray Pimienta (monitoreo continuo)
                     GameFiber.StartNew(delegate
                     {
-                        new PepperSprayController();
+                        try
+                        {
+                            new PepperSprayController();
+                        }
+                        catch (System.Threading.ThreadAbortException) { }
+                        catch (Exception ex)
+                        {
+                            Game.LogTrivial("SPI.PepperSprayController fatal fiber error: " + ex.Message);
+                        }
                     });
 
                     // Módulo 4: Balística — Placas Balísticas (monitoreo continuo)
                     GameFiber.StartNew(delegate
                     {
-                        new BallisticArmorManager();
+                        try
+                        {
+                            new BallisticArmorManager();
+                        }
+                        catch (System.Threading.ThreadAbortException) { }
+                        catch (Exception ex)
+                        {
+                            Game.LogTrivial("SPI.BallisticArmorManager fatal fiber error: " + ex.Message);
+                        }
                     });
 
                     // Módulo 6: Censo Español — Hook de identidades (monitoreo continuo)
                     GameFiber.StartNew(delegate
                     {
-                        PedHooker.StartHookingLoop();
+                        try
+                        {
+                            PedHooker.StartHookingLoop();
+                        }
+                        catch (System.Threading.ThreadAbortException) { }
+                        catch (Exception ex)
+                        {
+                            Game.LogTrivial("SPI.PedHooker fatal fiber error: " + ex.Message);
+                        }
                     });
 
                     Game.DisplayNotification(

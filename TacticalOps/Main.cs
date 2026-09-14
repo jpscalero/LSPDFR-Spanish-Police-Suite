@@ -58,37 +58,49 @@ namespace TacticalOps
                     // GameFiber para menu de Gestion de Escenas (tecla Home)
                     GameFiber.StartNew(delegate
                     {
-                        SceneMenu.Process();
+                        try { SceneMenu.Process(); }
+                        catch (System.Threading.ThreadAbortException) { }
+                        catch (Exception ex) { Game.LogTrivial("TacticalOps: Error en SceneMenu: " + ex.Message); }
                     });
 
                     // GameFiber para controlador de trafico perimetral
                     GameFiber.StartNew(delegate
                     {
-                        TrafficController.Process();
+                        try { TrafficController.Process(); }
+                        catch (System.Threading.ThreadAbortException) { }
+                        catch (Exception ex) { Game.LogTrivial("TacticalOps: Error en TrafficController: " + ex.Message); }
                     });
 
                     // GameFiber para menu de Primeros Auxilios / Botiquin IFAK (tecla End)
                     GameFiber.StartNew(delegate
                     {
-                        FirstAidKit.Process();
+                        try { FirstAidKit.Process(); }
+                        catch (System.Threading.ThreadAbortException) { }
+                        catch (Exception ex) { Game.LogTrivial("TacticalOps: Error en FirstAidKit: " + ex.Message); }
                     });
 
                     // GameFiber para menu de Entrada Tactica CQB (tecla PageDown)
                     GameFiber.StartNew(delegate
                     {
-                        TacticalEntryMenu.Process();
+                        try { TacticalEntryMenu.Process(); }
+                        catch (System.Threading.ThreadAbortException) { }
+                        catch (Exception ex) { Game.LogTrivial("TacticalOps: Error en TacticalEntryMenu: " + ex.Message); }
                     });
 
                     // GameFiber para InjuryManager (monitoreo de salud y sangrado del jugador)
                     GameFiber.StartNew(delegate
                     {
-                        InjuryManager.Process();
+                        try { InjuryManager.Process(); }
+                        catch (System.Threading.ThreadAbortException) { }
+                        catch (Exception ex) { Game.LogTrivial("TacticalOps: Error en InjuryManager: " + ex.Message); }
                     });
 
                     // GameFiber para sistema de Negociacion tactica y rehenes
                     GameFiber.StartNew(delegate
                     {
-                        NegotiationManager.Process();
+                        try { NegotiationManager.Process(); }
+                        catch (System.Threading.ThreadAbortException) { }
+                        catch (Exception ex) { Game.LogTrivial("TacticalOps: Error en NegotiationManager: " + ex.Message); }
                     });
 
                     Game.DisplayNotification(

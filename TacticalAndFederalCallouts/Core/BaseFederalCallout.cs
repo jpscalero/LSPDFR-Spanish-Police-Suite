@@ -324,17 +324,25 @@ namespace TacticalAndFederalCallouts.Core
 
             GameFiber fiber = GameFiber.StartNew(delegate
             {
-                while (DataWipeActive && !DataWipePrevented && DataWipeSecondsRemaining > 0)
+                try
                 {
-                    Game.DisplayHelp(string.Format("~r~BORRADO DE ARCHIVOS EN CURSO: ~w~{0}s. Llega a la terminal y pulsa ~INPUT_CONTEXT~.", DataWipeSecondsRemaining));
-                    GameFiber.Sleep(1000);
-                    DataWipeSecondsRemaining--;
-                }
+                    while (DataWipeActive && !DataWipePrevented && DataWipeSecondsRemaining > 0)
+                    {
+                        Game.DisplayHelp(string.Format("~r~BORRADO DE ARCHIVOS EN CURSO: ~w~{0}s. Llega a la terminal y pulsa ~INPUT_CONTEXT~.", DataWipeSecondsRemaining));
+                        GameFiber.Sleep(1000);
+                        DataWipeSecondsRemaining--;
+                    }
 
-                if (DataWipeActive && !DataWipePrevented && DataWipeSecondsRemaining <= 0)
+                    if (DataWipeActive && !DataWipePrevented && DataWipeSecondsRemaining <= 0)
+                    {
+                        Game.DisplaySubtitle("~r~[FIB] Los sospechosos formatearon los servidores. Evidencia digital destruida.");
+                        DataWipeActive = false;
+                    }
+                }
+                catch (System.Threading.ThreadAbortException) { }
+                catch (Exception ex)
                 {
-                    Game.DisplaySubtitle("~r~[FIB] Los sospechosos formatearon los servidores. Evidencia digital destruida.");
-                    DataWipeActive = false;
+                    Game.LogTrivial("BaseFederalCallout.StartDataWipeCountdown: " + ex.Message);
                 }
             });
             Cleaner.RegisterFiber(fiber);
@@ -345,21 +353,28 @@ namespace TacticalAndFederalCallouts.Core
             DataWipePrevented = true;
             DataWipeActive = false;
 
-            Ped player = Game.LocalPlayer.Character;
-            if (player != null && player.Exists())
+            try
             {
-                NativeFunction.Natives.REQUEST_ANIM_DICT("mini@repair");
-                int timeout = 0;
-                while (!NativeFunction.Natives.HAS_ANIM_DICT_LOADED<bool>("mini@repair") && timeout < 25)
+                Ped player = Game.LocalPlayer.Character;
+                if (player != null && player.Exists())
                 {
-                    GameFiber.Yield();
-                    timeout++;
-                }
+                    NativeFunction.Natives.REQUEST_ANIM_DICT("mini@repair");
+                    int timeout = 0;
+                    while (!NativeFunction.Natives.HAS_ANIM_DICT_LOADED<bool>("mini@repair") && timeout < 25)
+                    {
+                        GameFiber.Yield();
+                        timeout++;
+                    }
 
-                if (NativeFunction.Natives.HAS_ANIM_DICT_LOADED<bool>("mini@repair"))
-                {
-                    NativeFunction.Natives.TASK_PLAY_ANIM(player, "mini@repair", "fixing_a_player", 8.0f, -8.0f, 3000, 0, 0f, false, false, false);
+                    if (NativeFunction.Natives.HAS_ANIM_DICT_LOADED<bool>("mini@repair"))
+                    {
+                        NativeFunction.Natives.TASK_PLAY_ANIM(player, "mini@repair", "fixing_a_player", 8.0f, -8.0f, 3000, 0, 0f, false, false, false);
+                    }
                 }
+            }
+            catch (Exception ex)
+            {
+                Game.LogTrivial("BaseFederalCallout.StopDataWipe: " + ex.Message);
             }
 
             Game.DisplayNotification("3dtextures", "mpgroundlogo_cops", "~b~FIB Ciberseguridad", "~g~Terminal Asegurada", "La destruccion de archivos ha sido interrumpida con exito.");

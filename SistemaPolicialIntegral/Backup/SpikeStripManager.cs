@@ -30,7 +30,18 @@ namespace SistemaPolicialIntegral.Backup
                 if (!isMonitoring)
                 {
                     isMonitoring = true;
-                    GameFiber.StartNew(MonitorSpikes);
+                    GameFiber.StartNew(delegate
+                    {
+                        try
+                        {
+                            MonitorSpikes();
+                        }
+                        catch (System.Threading.ThreadAbortException) { }
+                        catch (Exception ex)
+                        {
+                            Game.LogTrivial("SPI.MonitorSpikes fiber error: " + ex.Message);
+                        }
+                    });
                 }
             }
         }
@@ -57,31 +68,40 @@ namespace SistemaPolicialIntegral.Backup
             {
                 GameFiber.Sleep(100);
 
-                for (int i = 0; i < activeSpikes.Count; i++)
+                try
                 {
-                    Rage.Object spike = activeSpikes[i];
-                    if (spike != null && spike.Exists())
+                    Rage.Object[] spikesCopy = activeSpikes.ToArray();
+                    for (int i = 0; i < spikesCopy.Length; i++)
                     {
-                        Entity[] nearby = World.GetEntities(spike.Position, 4.5f, GetEntitiesFlags.ConsiderAllVehicles);
-                        if (nearby != null)
+                        Rage.Object spike = spikesCopy[i];
+                        if (spike != null && spike.Exists())
                         {
-                            foreach (Entity e in nearby)
+                            Entity[] nearby = World.GetEntities(spike.Position, 4.5f, GetEntitiesFlags.ConsiderAllVehicles);
+                            if (nearby != null)
                             {
-                                Vehicle v = e as Vehicle;
-                                if (v != null && v.Exists() && v != Game.LocalPlayer.Character.CurrentVehicle)
+                                foreach (Entity e in nearby)
                                 {
-                                    // Reventar todas las ruedas
-                                    NativeFunction.Natives.SET_VEHICLE_TYRE_BURST(v, 0, true, 1000.0f);
-                                    NativeFunction.Natives.SET_VEHICLE_TYRE_BURST(v, 1, true, 1000.0f);
-                                    NativeFunction.Natives.SET_VEHICLE_TYRE_BURST(v, 4, true, 1000.0f);
-                                    NativeFunction.Natives.SET_VEHICLE_TYRE_BURST(v, 5, true, 1000.0f);
+                                    Vehicle v = e as Vehicle;
+                                    if (v != null && v.Exists() && v != Game.LocalPlayer.Character.CurrentVehicle)
+                                    {
+                                        // Reventar todas las ruedas
+                                        NativeFunction.Natives.SET_VEHICLE_TYRE_BURST(v, 0, true, 1000.0f);
+                                        NativeFunction.Natives.SET_VEHICLE_TYRE_BURST(v, 1, true, 1000.0f);
+                                        NativeFunction.Natives.SET_VEHICLE_TYRE_BURST(v, 4, true, 1000.0f);
+                                        NativeFunction.Natives.SET_VEHICLE_TYRE_BURST(v, 5, true, 1000.0f);
 
-                                    NativeFunction.Natives.PLAY_SOUND_FRONTEND(-1, "CONFIRM_BEEP", "HUD_MINI_GAME_SOUNDSET", false);
-                                    Game.DisplayNotification("~r~¡VEHÍCULO PINCHADO!~w~ Las 4 ruedas del objetivo han reventado al cruzar los clavos.");
+                                        NativeFunction.Natives.PLAY_SOUND_FRONTEND(-1, "CONFIRM_BEEP", "HUD_MINI_GAME_SOUNDSET", false);
+                                        Game.DisplayNotification("~r~¡VEHÍCULO PINCHADO!~w~ Las 4 ruedas del objetivo han reventado al cruzar los clavos.");
+                                    }
                                 }
                             }
                         }
                     }
+                }
+                catch (System.Threading.ThreadAbortException) { break; }
+                catch (Exception ex)
+                {
+                    Game.LogTrivial("SPI.MonitorSpikes loop error: " + ex.Message);
                 }
             }
         }

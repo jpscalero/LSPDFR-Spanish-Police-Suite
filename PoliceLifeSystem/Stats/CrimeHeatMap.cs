@@ -127,16 +127,24 @@ namespace PoliceLifeSystem.Stats
             // Temporizador de 30 segundos para retirar los blips
             GameFiber.StartNew(delegate
             {
-                int elapsed = 0;
-                while (elapsed < 30000 && _isHeatMapActive)
+                try
                 {
-                    GameFiber.Sleep(1000);
-                    elapsed += 1000;
-                }
+                    int elapsed = 0;
+                    while (elapsed < 30000 && _isHeatMapActive)
+                    {
+                        GameFiber.Sleep(1000);
+                        elapsed += 1000;
+                    }
 
-                LimpiarBlips();
-                _isHeatMapActive = false;
-                Game.DisplayNotification("~b~Mapa de calor de delincuencia desactivado del radar.");
+                    LimpiarBlips();
+                    _isHeatMapActive = false;
+                    Game.DisplayNotification("~b~Mapa de calor de delincuencia desactivado del radar.");
+                }
+                catch (System.Threading.ThreadAbortException) { }
+                catch (Exception ex)
+                {
+                    Game.LogTrivial("PLS.CrimeHeatMap error: " + ex.Message);
+                }
             });
         }
 

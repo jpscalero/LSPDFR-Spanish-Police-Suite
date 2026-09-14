@@ -32,22 +32,30 @@ namespace PeligroExtremoCallouts.Core
                 NativeFunction.Natives.REQUEST_ANIM_DICT("amb@world_human_paparazzi@male@idle_a");
                 GameFiber.StartNew(delegate
                 {
-                    int wait = 0;
-                    while (!NativeFunction.Natives.HAS_ANIM_DICT_LOADED<bool>("amb@world_human_paparazzi@male@idle_a") && wait < 20)
+                    try
                     {
-                        GameFiber.Yield();
-                        wait++;
-                    }
+                        int wait = 0;
+                        while (!NativeFunction.Natives.HAS_ANIM_DICT_LOADED<bool>("amb@world_human_paparazzi@male@idle_a") && wait < 20)
+                        {
+                            GameFiber.Yield();
+                            wait++;
+                        }
 
-                    if (player != null && player.Exists())
+                        if (player != null && player.Exists())
+                        {
+                            NativeFunction.Natives.TASK_PLAY_ANIM(player, "amb@world_human_paparazzi@male@idle_a", "idle_a", 8.0f, -8.0f, 2200, 0, 0f, false, false, false);
+                        }
+
+                        GameFiber.Sleep(800);
+                        // Flash fotografico
+                        NativeFunction.Natives.ADD_EXPLOSION(evidencePos.X, evidencePos.Y, evidencePos.Z + 0.3f, 25, 0.05f, false, false, 0.0f);
+                        Game.DisplayNotification("3dtextures", "mpgroundlogo_cops", "~b~FIB Forense", "~y~Fotografia Documentada", "Prueba catalogada en cadena de custodia: " + evidenceName);
+                    }
+                    catch (System.Threading.ThreadAbortException) { }
+                    catch (Exception ex)
                     {
-                        NativeFunction.Natives.TASK_PLAY_ANIM(player, "amb@world_human_paparazzi@male@idle_a", "idle_a", 8.0f, -8.0f, 2200, 0, 0f, false, false, false);
+                        Game.LogTrivial("PeligroExtremoCallouts.ImmersionManager.TakeForensicPhoto.Fiber: " + ex.Message);
                     }
-
-                    GameFiber.Sleep(800);
-                    // Flash fotográfico
-                    NativeFunction.Natives.ADD_EXPLOSION(evidencePos.X, evidencePos.Y, evidencePos.Z + 0.3f, 25, 0.05f, false, false, 0.0f);
-                    Game.DisplayNotification("3dtextures", "mpgroundlogo_cops", "~b~FIB Forense", "~y~Fotografía Documentada", "Prueba catalogada en cadena de custodia: " + evidenceName);
                 });
             }
             catch (Exception ex)

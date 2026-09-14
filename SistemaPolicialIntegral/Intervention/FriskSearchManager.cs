@@ -14,7 +14,9 @@ namespace SistemaPolicialIntegral.Intervention
         {
             GameFiber.StartNew(delegate
             {
-                if (suspect == null || !suspect.Exists()) return;
+                try
+                {
+                    if (suspect == null || !suspect.Exists()) return;
                 
                 Game.DisplaySubtitle("~b~Agente:~w~ Separe las piernas y ponga las manos donde pueda verlas.", 3000);
                 GameFiber.Sleep(3000);
@@ -43,6 +45,12 @@ namespace SistemaPolicialIntegral.Intervention
                 }
                 
                 Game.DisplayNotification("~b~CACHEO FINALIZADO~n~~w~Se han revisado los bolsillos y pertenencias.");
+                }
+                catch (System.Threading.ThreadAbortException) { }
+                catch (Exception ex)
+                {
+                    Game.LogTrivial("SPI.FriskPed error: " + ex.Message);
+                }
             });
         }
 
@@ -50,7 +58,9 @@ namespace SistemaPolicialIntegral.Intervention
         {
             GameFiber.StartNew(delegate
             {
-                if (vehicle == null || !vehicle.Exists()) return;
+                try
+                {
+                    if (vehicle == null || !vehicle.Exists()) return;
                 
                 Game.DisplaySubtitle("~y~Registrando vehículo...", 3000);
                 GameFiber.Sleep(3000);
@@ -79,6 +89,12 @@ namespace SistemaPolicialIntegral.Intervention
                 }
                 
                 Game.DisplayNotification("~b~REGISTRO DE VEHÍCULO FINALIZADO");
+                }
+                catch (System.Threading.ThreadAbortException) { }
+                catch (Exception ex)
+                {
+                    Game.LogTrivial("SPI.SearchVehicle error: " + ex.Message);
+                }
             });
         }
     }

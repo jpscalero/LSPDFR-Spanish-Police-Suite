@@ -156,28 +156,47 @@ namespace TacticalOps.Negotiation
 
         public static void Process()
         {
-            Game.LogTrivial("TacticalOps: NegotiationManager loop iniciado.");
-
-            while (true)
+            try
             {
-                GameFiber.Yield();
+                Game.LogTrivial("TacticalOps: NegotiationManager loop iniciado.");
 
-                if (isNegotiating)
+                while (true)
                 {
-                    if (suspectPed == null || !suspectPed.Exists() || suspectPed.IsDead)
+                    GameFiber.Yield();
+
+                    try
                     {
-                        EndNegotiation();
-                        Game.DisplayNotification("~y~Negociacion interrumpida:~w~ El sospechoso ha sido neutralizado o no existe.");
-                        continue;
-                    }
+                        if (isNegotiating)
+                        {
+                            if (suspectPed == null || !suspectPed.Exists() || suspectPed.IsDead)
+                            {
+                                EndNegotiation();
+                                Game.DisplayNotification("~y~Negociacion interrumpida:~w~ El sospechoso ha sido neutralizado o no existe.");
+                                continue;
+                            }
 
-                    TensionSystem.Update();
-                    DialogueTree.Process();
+                            TensionSystem.Update();
+                            DialogueTree.Process();
+                        }
+                        else
+                        {
+                            GameFiber.Sleep(200);
+                        }
+                    }
+                    catch (System.Threading.ThreadAbortException)
+                    {
+                        break;
+                    }
+                    catch (Exception ex)
+                    {
+                        Game.LogTrivial("TacticalOps.NegotiationManager.Process loop: " + ex.Message);
+                    }
                 }
-                else
-                {
-                    GameFiber.Sleep(200);
-                }
+            }
+            catch (System.Threading.ThreadAbortException) { }
+            catch (Exception ex)
+            {
+                Game.LogTrivial("TacticalOps.NegotiationManager.Process fatal: " + ex.Message);
             }
         }
     }

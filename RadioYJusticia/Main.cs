@@ -55,25 +55,57 @@ namespace RadioYJusticia
                     // GameFiber para Menú de Radio SIRDEE (NumPad *)
                     GameFiber.StartNew(delegate
                     {
-                        RadioMenu.Process();
+                        try
+                        {
+                            RadioMenu.Process();
+                        }
+                        catch (System.Threading.ThreadAbortException) { }
+                        catch (Exception ex)
+                        {
+                            Game.LogTrivial("RadioYJusticia: Error critico en fibra de RadioMenu: " + ex.Message);
+                        }
                     });
 
                     // GameFiber para Botón de Pánico 10-99 (NumPad -)
                     GameFiber.StartNew(delegate
                     {
-                        PanicButton.Process();
+                        try
+                        {
+                            PanicButton.Process();
+                        }
+                        catch (System.Threading.ThreadAbortException) { }
+                        catch (Exception ex)
+                        {
+                            Game.LogTrivial("RadioYJusticia: Error critico en fibra de PanicButton: " + ex.Message);
+                        }
                     });
 
                     // GameFiber para Radio Ambiental de fondo (chatter aleatorio)
                     GameFiber.StartNew(delegate
                     {
-                        AmbientRadioChatter.Process();
+                        try
+                        {
+                            AmbientRadioChatter.Process();
+                        }
+                        catch (System.Threading.ThreadAbortException) { }
+                        catch (Exception ex)
+                        {
+                            Game.LogTrivial("RadioYJusticia: Error critico en fibra de AmbientRadioChatter: " + ex.Message);
+                        }
                     });
 
                     // GameFiber para CustodyManager (monitoreo de detenidos, 72h legales y juicios)
                     GameFiber.StartNew(delegate
                     {
-                        CustodyManager.Process();
+                        try
+                        {
+                            CustodyManager.Process();
+                        }
+                        catch (System.Threading.ThreadAbortException) { }
+                        catch (Exception ex)
+                        {
+                            Game.LogTrivial("RadioYJusticia: Error critico en fibra de CustodyManager: " + ex.Message);
+                        }
                     });
 
                     Game.DisplayNotification(

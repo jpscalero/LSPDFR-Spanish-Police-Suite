@@ -73,9 +73,17 @@ namespace SistemaPolicialIntegral.Backup
 
             GameFiber.StartNew(delegate
             {
-                GameFiber.Sleep(2000);
-                AudioEngine.PlaySirdeeClose();
-                Game.DisplayNotification("~b~[MANIOBRA CAJA]~w~ Patrullas ZETA flanqueando izquierda y derecha para reducir la velocidad.");
+                try
+                {
+                    GameFiber.Sleep(2000);
+                    AudioEngine.PlaySirdeeClose();
+                    Game.DisplayNotification("~b~[MANIOBRA CAJA]~w~ Patrullas ZETA flanqueando izquierda y derecha para reducir la velocidad.");
+                }
+                catch (System.Threading.ThreadAbortException) { }
+                catch (Exception ex)
+                {
+                    Game.LogTrivial("SPI.PursuitTacticsManager error: " + ex.Message);
+                }
             });
         }
     }

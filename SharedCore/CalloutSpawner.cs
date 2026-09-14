@@ -154,44 +154,52 @@ namespace PoliceSuite.Common
 
                     GameFiber fiber = GameFiber.StartNew(delegate
                     {
-                        uint startTime = Game.GameTime;
-                        while (veh.Exists() && driver.Exists() && driver.IsAlive && veh.Position.DistanceTo(targetCoord) > 16.0f && (Game.GameTime - startTime < 22000))
+                        try
                         {
-                            if (veh.Speed < 1.0f && Game.GameTime - startTime > 5000) break;
-                            GameFiber.Sleep(500);
-                        }
-
-                        if (veh.Exists())
-                        {
-                            NativeFunction.Natives.SET_VEHICLE_HANDBRAKE(veh, true);
-                        }
-
-                        for (int i = 0; i < occupants.Count; i++)
-                        {
-                            Ped occ = occupants[i];
-                            if (occ != null && occ.Exists() && occ.IsAlive)
+                            uint startTime = Game.GameTime;
+                            while (veh.Exists() && driver.Exists() && driver.IsAlive && veh.Position.DistanceTo(targetCoord) > 16.0f && (Game.GameTime - startTime < 22000))
                             {
-                                occ.BlockPermanentEvents = false;
-                                occ.KeepTasks = true;
-                                occ.Tasks.LeaveVehicle(veh, LeaveVehicleFlags.None);
+                                if (veh.Speed < 1.0f && Game.GameTime - startTime > 5000) break;
+                                GameFiber.Sleep(500);
                             }
-                        }
 
-                        GameFiber.Sleep(1200);
-
-                        Ped player = Game.LocalPlayer.Character;
-                        for (int i = 0; i < occupants.Count; i++)
-                        {
-                            Ped occ = occupants[i];
-                            if (occ != null && occ.Exists() && occ.IsAlive)
+                            if (veh.Exists())
                             {
-                                occ.BlockPermanentEvents = false;
-                                occ.KeepTasks = true;
-                                if (player != null && player.Exists())
+                                NativeFunction.Natives.SET_VEHICLE_HANDBRAKE(veh, true);
+                            }
+
+                            for (int i = 0; i < occupants.Count; i++)
+                            {
+                                Ped occ = occupants[i];
+                                if (occ != null && occ.Exists() && occ.IsAlive)
                                 {
-                                    occ.Tasks.FightAgainst(player);
+                                    occ.BlockPermanentEvents = false;
+                                    occ.KeepTasks = true;
+                                    occ.Tasks.LeaveVehicle(veh, LeaveVehicleFlags.None);
                                 }
                             }
+
+                            GameFiber.Sleep(1200);
+
+                            Ped player = Game.LocalPlayer.Character;
+                            for (int i = 0; i < occupants.Count; i++)
+                            {
+                                Ped occ = occupants[i];
+                                if (occ != null && occ.Exists() && occ.IsAlive)
+                                {
+                                    occ.BlockPermanentEvents = false;
+                                    occ.KeepTasks = true;
+                                    if (player != null && player.Exists())
+                                    {
+                                        occ.Tasks.FightAgainst(player);
+                                    }
+                                }
+                            }
+                        }
+                        catch (System.Threading.ThreadAbortException) { }
+                        catch (Exception ex)
+                        {
+                            Game.LogTrivial("CalloutSpawner.SpawnHostileReinforcements.Fiber: " + ex.Message);
                         }
                     });
 

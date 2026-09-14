@@ -78,21 +78,29 @@ namespace AlternativeCallouts.Core
 
                 GameFiber fiber = GameFiber.StartNew(delegate
                 {
-                    uint start = Game.GameTime;
-                    while (runner.Exists() && runner.IsAlive && !runner.IsInVehicle(vehicle, false) && (Game.GameTime - start < 10000))
+                    try
                     {
-                        GameFiber.Sleep(400);
-                    }
+                        uint start = Game.GameTime;
+                        while (runner.Exists() && runner.IsAlive && !runner.IsInVehicle(vehicle, false) && (Game.GameTime - start < 10000))
+                        {
+                            GameFiber.Sleep(400);
+                        }
 
-                    if (runner.Exists() && runner.IsAlive && runner.IsInVehicle(vehicle, false))
+                        if (runner.Exists() && runner.IsAlive && runner.IsInVehicle(vehicle, false))
+                        {
+                            runner.BlockPermanentEvents = false;
+                            vehicle.IsEngineOn = true;
+                            LHandle pursuit = Functions.CreatePursuit();
+                            Functions.AddPedToPursuit(pursuit, runner);
+                            Functions.SetPursuitIsActiveForPlayer(pursuit, true);
+                            if (onPursuitCreated != null) onPursuitCreated(pursuit);
+                            Game.DisplaySubtitle(shout);
+                        }
+                    }
+                    catch (System.Threading.ThreadAbortException) { }
+                    catch (Exception ex)
                     {
-                        runner.BlockPermanentEvents = false;
-                        vehicle.IsEngineOn = true;
-                        LHandle pursuit = Functions.CreatePursuit();
-                        Functions.AddPedToPursuit(pursuit, runner);
-                        Functions.SetPursuitIsActiveForPlayer(pursuit, true);
-                        if (onPursuitCreated != null) onPursuitCreated(pursuit);
-                        Game.DisplaySubtitle(shout);
+                        Game.LogTrivial("AlternativeOutcomeHelper.MakeSuspectFleeInVehicle: " + ex.Message);
                     }
                 });
                 if (cleaner != null) cleaner.RegisterFiber(fiber);

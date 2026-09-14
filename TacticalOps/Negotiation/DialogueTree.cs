@@ -126,7 +126,15 @@ namespace TacticalOps.Negotiation
 
                 GameFiber.StartNew(delegate
                 {
-                    ExecuteDialogueChoice(selectedItem == itemCorrect, selectedItem == itemNeutral, selectedItem == itemBad);
+                    try
+                    {
+                        ExecuteDialogueChoice(selectedItem == itemCorrect, selectedItem == itemNeutral, selectedItem == itemBad);
+                    }
+                    catch (System.Threading.ThreadAbortException) { }
+                    catch (Exception ex)
+                    {
+                        Game.LogTrivial("TacticalOps.DialogueTree.ExecuteDialogueChoice: " + ex.Message);
+                    }
                 });
             };
         }

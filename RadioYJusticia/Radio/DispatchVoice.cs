@@ -45,8 +45,16 @@ namespace RadioYJusticia.Radio
                 // Click de cierre de microfonía tras 4.8 segundos
                 GameFiber.StartNew(delegate
                 {
-                    GameFiber.Sleep(4800);
-                    PlayRadioClick();
+                    try
+                    {
+                        GameFiber.Sleep(4800);
+                        PlayRadioClick();
+                    }
+                    catch (System.Threading.ThreadAbortException) { }
+                    catch (Exception ex)
+                    {
+                        Game.LogTrivial("RadioYJusticia.DispatchVoice fiber error: " + ex.Message);
+                    }
                 });
             }
             catch (Exception ex)
@@ -67,8 +75,16 @@ namespace RadioYJusticia.Radio
 
                 GameFiber.StartNew(delegate
                 {
-                    GameFiber.Sleep(4400);
-                    PlayRadioClick();
+                    try
+                    {
+                        GameFiber.Sleep(4400);
+                        PlayRadioClick();
+                    }
+                    catch (System.Threading.ThreadAbortException) { }
+                    catch (Exception ex)
+                    {
+                        Game.LogTrivial("RadioYJusticia.DispatchVoice officer fiber error: " + ex.Message);
+                    }
                 });
             }
             catch (Exception ex)

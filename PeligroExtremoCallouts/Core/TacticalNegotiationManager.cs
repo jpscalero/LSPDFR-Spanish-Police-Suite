@@ -70,18 +70,26 @@ namespace PeligroExtremoCallouts.Core
 
                 GameFiber.StartNew(delegate
                 {
-                    int timeout = 0;
-                    while (!NativeFunction.Natives.HAS_ANIM_DICT_LOADED<bool>("random@arrests") && timeout < 20)
+                    try
                     {
-                        GameFiber.Yield();
-                        timeout++;
-                    }
+                        int timeout = 0;
+                        while (!NativeFunction.Natives.HAS_ANIM_DICT_LOADED<bool>("random@arrests") && timeout < 20)
+                        {
+                            GameFiber.Yield();
+                            timeout++;
+                        }
 
-                    if (suspect != null && suspect.Exists() && suspect.IsAlive)
+                        if (suspect != null && suspect.Exists() && suspect.IsAlive)
+                        {
+                            NativeFunction.Natives.TASK_PLAY_ANIM(suspect, "random@arrests", "kneeling_arrest_idle", 8.0f, -8.0f, -1, 1, 0f, false, false, false);
+                            NativeFunction.Natives.PLAY_PED_AMBIENT_SPEECH_NATIVE(suspect, "GENERIC_SURRENDER", "SPEECH_PARAMS_FORCE_SHOUTED");
+                            Game.DisplaySubtitle("~g~[RENDICION TACTICA]~w~ !El sospechoso se rinde y se arrodilla con las manos en la nuca! Esposenlo.");
+                        }
+                    }
+                    catch (System.Threading.ThreadAbortException) { }
+                    catch (Exception ex)
                     {
-                        NativeFunction.Natives.TASK_PLAY_ANIM(suspect, "random@arrests", "kneeling_arrest_idle", 8.0f, -8.0f, -1, 1, 0f, false, false, false);
-                        NativeFunction.Natives.PLAY_PED_AMBIENT_SPEECH_NATIVE(suspect, "GENERIC_SURRENDER", "SPEECH_PARAMS_FORCE_SHOUTED");
-                        Game.DisplaySubtitle("~g~[RENDICION TACTICA]~w~ ¡El sospechoso se rinde y se arrodilla con las manos en la nuca! Esposenlo.");
+                        Game.LogTrivial("PeligroExtremoCallouts.TacticalNegotiationManager.ExecuteSurrender: " + ex.Message);
                     }
                 });
             }

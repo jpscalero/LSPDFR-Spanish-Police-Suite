@@ -82,20 +82,28 @@ namespace PoliceSuite.Common
 
                 GameFiber fiber = GameFiber.StartNew(delegate
                 {
-                    runner.Tasks.EnterVehicle(escapeVehicle, -1);
-
-                    uint enterStart = Game.GameTime;
-                    while (runner.Exists() && runner.IsAlive && !runner.IsInVehicle(escapeVehicle, false) && (Game.GameTime - enterStart < 12000))
+                    try
                     {
-                        GameFiber.Sleep(400);
+                        runner.Tasks.EnterVehicle(escapeVehicle, -1);
+
+                        uint enterStart = Game.GameTime;
+                        while (runner.Exists() && runner.IsAlive && !runner.IsInVehicle(escapeVehicle, false) && (Game.GameTime - enterStart < 12000))
+                        {
+                            GameFiber.Sleep(400);
+                        }
+
+                        if (runner.Exists() && runner.IsAlive && runner.IsInVehicle(escapeVehicle, false))
+                        {
+                            escapeVehicle.IsEngineOn = true;
+                            NativeFunction.Natives.TASK_VEHICLE_DRIVE_TO_COORD_LONGRANGE(
+                                runner, escapeVehicle, destination.X, destination.Y, destination.Z, 38.0f, 786603, 15.0f
+                            );
+                        }
                     }
-
-                    if (runner.Exists() && runner.IsAlive && runner.IsInVehicle(escapeVehicle, false))
+                    catch (System.Threading.ThreadAbortException) { }
+                    catch (Exception ex)
                     {
-                        escapeVehicle.IsEngineOn = true;
-                        NativeFunction.Natives.TASK_VEHICLE_DRIVE_TO_COORD_LONGRANGE(
-                            runner, escapeVehicle, destination.X, destination.Y, destination.Z, 38.0f, 786603, 15.0f
-                        );
+                        Game.LogTrivial("CalloutEffects.TriggerVehicleEscape: " + ex.Message);
                     }
                 });
                 if (registerCleanup != null) registerCleanup(fiber);
@@ -112,18 +120,26 @@ namespace PoliceSuite.Common
             {
                 GameFiber fiber = GameFiber.StartNew(delegate
                 {
-                    uint startTime = Game.GameTime;
-                    while (Game.GameTime - startTime < (uint)durationMs)
+                    try
                     {
-                        PlayPtfx(fxAsset, fxName, pos, 2.0f);
-
-                        Ped player = Game.LocalPlayer.Character;
-                        if (player != null && player.Exists() && player.Position.DistanceTo(pos) < radius)
+                        uint startTime = Game.GameTime;
+                        while (Game.GameTime - startTime < (uint)durationMs)
                         {
-                            NativeFunction.Natives.ANIMPOSTFX_PLAY("CamPushInNeutral", 800, false);
-                        }
+                            PlayPtfx(fxAsset, fxName, pos, 2.0f);
 
-                        GameFiber.Sleep(1200);
+                            Ped player = Game.LocalPlayer.Character;
+                            if (player != null && player.Exists() && player.Position.DistanceTo(pos) < radius)
+                            {
+                                NativeFunction.Natives.ANIMPOSTFX_PLAY("CamPushInNeutral", 800, false);
+                            }
+
+                            GameFiber.Sleep(1200);
+                        }
+                    }
+                    catch (System.Threading.ThreadAbortException) { }
+                    catch (Exception ex)
+                    {
+                        Game.LogTrivial("CalloutEffects.TriggerEnvironmentalHazard: " + ex.Message);
                     }
                 });
                 if (registerCleanup != null) registerCleanup(fiber);
@@ -171,14 +187,22 @@ namespace PoliceSuite.Common
 
                 GameFiber fiber = GameFiber.StartNew(delegate
                 {
-                    uint start = Game.GameTime;
-                    while (hostage.Exists() && hostage.IsAlive && hostage.Position.DistanceTo(safePoint) > 3.0f && (Game.GameTime - start < 15000))
+                    try
                     {
-                        GameFiber.Sleep(500);
+                        uint start = Game.GameTime;
+                        while (hostage.Exists() && hostage.IsAlive && hostage.Position.DistanceTo(safePoint) > 3.0f && (Game.GameTime - start < 15000))
+                        {
+                            GameFiber.Sleep(500);
+                        }
+                        if (hostage.Exists() && hostage.IsAlive)
+                        {
+                            hostage.Tasks.Cower(-1);
+                        }
                     }
-                    if (hostage.Exists() && hostage.IsAlive)
+                    catch (System.Threading.ThreadAbortException) { }
+                    catch (Exception ex)
                     {
-                        hostage.Tasks.Cower(-1);
+                        Game.LogTrivial("CalloutEffects.ExtractHostageToSafety: " + ex.Message);
                     }
                 });
                 if (registerCleanup != null) registerCleanup(fiber);

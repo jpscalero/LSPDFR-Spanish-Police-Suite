@@ -63,14 +63,22 @@ namespace PeligroExtremoCallouts.Callouts.Tiroteos_Asaltos
 
                     GameFiber.StartNew(delegate
                     {
-                        if (s != null && s.Exists() && s.IsAlive)
+                        try
                         {
-                            s.Tasks.LeaveVehicle(LeaveVehicleFlags.BailOut | LeaveVehicleFlags.LeaveDoorOpen);
-                            GameFiber.Sleep(1200);
-                            if (s != null && s.Exists() && s.IsAlive && player != null && player.Exists())
+                            if (s != null && s.Exists() && s.IsAlive)
                             {
-                                s.Tasks.FightAgainst(player);
+                                s.Tasks.LeaveVehicle(LeaveVehicleFlags.BailOut | LeaveVehicleFlags.LeaveDoorOpen);
+                                GameFiber.Sleep(1200);
+                                if (s != null && s.Exists() && s.IsAlive && player != null && player.Exists())
+                                {
+                                    s.Tasks.FightAgainst(player);
+                                }
                             }
+                        }
+                        catch (System.Threading.ThreadAbortException) { }
+                        catch (Exception ex)
+                        {
+                            Game.LogTrivial("SA_TrafficStopPointBlankAmbush.Fiber: " + ex.Message);
                         }
                     });
                 }

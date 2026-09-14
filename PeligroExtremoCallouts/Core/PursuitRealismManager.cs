@@ -106,12 +106,20 @@ namespace PeligroExtremoCallouts.Core
                     // Desembarco con emboscada inmediata tras la puerta del vehiculo
                     GameFiber.StartNew(delegate
                     {
-                        GameFiber.Sleep(1200);
-                        if (suspect != null && suspect.Exists() && suspect.IsAlive && player != null && player.Exists())
+                        try
                         {
-                            suspect.Tasks.FightAgainst(player);
-                            NativeFunction.Natives.SET_PED_COMBAT_MOVEMENT(suspect, 2); // Advance
-                            NativeFunction.Natives.PLAY_PED_AMBIENT_SPEECH_NATIVE(suspect, "GENERIC_WAR_CRY", "SPEECH_PARAMS_FORCE_SHOUTED");
+                            GameFiber.Sleep(1200);
+                            if (suspect != null && suspect.Exists() && suspect.IsAlive && player != null && player.Exists())
+                            {
+                                suspect.Tasks.FightAgainst(player);
+                                NativeFunction.Natives.SET_PED_COMBAT_MOVEMENT(suspect, 2); // Advance
+                                NativeFunction.Natives.PLAY_PED_AMBIENT_SPEECH_NATIVE(suspect, "GENERIC_WAR_CRY", "SPEECH_PARAMS_FORCE_SHOUTED");
+                            }
+                        }
+                        catch (System.Threading.ThreadAbortException) { }
+                        catch (Exception ex)
+                        {
+                            Game.LogTrivial("PursuitRealismManager.BailoutAmbush: " + ex.Message);
                         }
                     });
                 }
@@ -120,10 +128,18 @@ namespace PeligroExtremoCallouts.Core
                     // Huida a pie evasiva por callejones
                     GameFiber.StartNew(delegate
                     {
-                        GameFiber.Sleep(1000);
-                        if (suspect != null && suspect.Exists() && suspect.IsAlive && player != null && player.Exists())
+                        try
                         {
-                            suspect.Tasks.Flee(player, 250f, 60000);
+                            GameFiber.Sleep(1000);
+                            if (suspect != null && suspect.Exists() && suspect.IsAlive && player != null && player.Exists())
+                            {
+                                suspect.Tasks.Flee(player, 250f, 60000);
+                            }
+                        }
+                        catch (System.Threading.ThreadAbortException) { }
+                        catch (Exception ex)
+                        {
+                            Game.LogTrivial("PursuitRealismManager.BailoutFlee: " + ex.Message);
                         }
                     });
                 }
