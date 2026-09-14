@@ -4,7 +4,13 @@
 *.7z
 *.nupkg
 *.asi
-/*.dll
+*.dll
+*.pdb
+*.log
+
+# Local build environment configurations (machine-specific paths)
+build.config.json
+build.env
 
 # External tools and SDK downloads
 temp_mods/

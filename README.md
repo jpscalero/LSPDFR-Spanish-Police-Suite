@@ -107,12 +107,16 @@ Reemplaza y amplía al **100%** las funciones de los clásicos *StopThePed* y *U
 
 ---
 
-## 💻 Instalación Rápida
+## 💻 Instalación y Descarga
 
-1. Copia el contenido de la carpeta `plugins/LSPDFR/` en la carpeta `plugins/LSPDFR/` de tu directorio principal de **Grand Theft Auto V**.
-2. Asegúrate de tener instalado [RAGE Plugin Hook](https://ragepluginhook.net/) y [LSPDFR](https://www.lcpdfr.com/lspdfr/).
-3. Inicia GTA V mediante `RAGEPluginHook.exe`.
-4. Una vez en el juego, entra de servicio dirigiéndote a cualquier comisaría o escribiendo `ForceDuty` en la consola de RPH (`F4`).
+> [!IMPORTANT]
+> **Binarios Compilados (.DLL)**: Siguiendo las directrices de buenas prácticas de desarrollo, los archivos binarios compilados (`*.dll`) **no se almacenan en el repositorio Git**. Puedes descargar los paquetes de instalación precompilados y listos para jugar directamente desde los **[Releases Oficiales en GitHub](https://github.com/jpscalero/LSPDFR-Spanish-Police-Suite/releases)**.
+
+1. Descarga el paquete `LSPDFR-Spanish-Police-Suite-v1.0.0.zip` desde la sección de **[GitHub Releases](https://github.com/jpscalero/LSPDFR-Spanish-Police-Suite/releases)**.
+2. Copia el contenido de la carpeta `plugins/LSPDFR/` (DLLs, archivos de configuración `.ini` y diccionarios XML de CompuLite) en la carpeta `plugins/LSPDFR/` de tu directorio principal de **Grand Theft Auto V**.
+3. Asegúrate de tener instalado [RAGE Plugin Hook](https://ragepluginhook.net/) y [LSPDFR](https://www.lcpdfr.com/lspdfr/).
+4. Inicia GTA V mediante `RAGEPluginHook.exe`.
+5. Una vez en el juego, entra de servicio dirigiéndote a cualquier comisaría o escribiendo `ForceDuty` en la consola de RPH (`F4`).
 
 ---
 
