@@ -51,8 +51,9 @@ namespace RadioYJusticia.Radio
                     NativeFunction.Natives.PLAY_SOUND_FRONTEND(-1, "TIMER_STOP", "HUD_MINI_GAME_SOUNDSET", false);
                     NativeFunction.Natives.PLAY_SOUND_FRONTEND(-1, "CHECKPOINT_MISSED", "HUD_MINI_GAME_SOUNDSET", false);
                 }
-                catch
+                catch (Exception ex)
                 {
+                    Game.LogTrivial("RadioYJusticia.PanicButton.ActivatePanicButton (Audio): " + ex.Message);
                 }
 
                 // Subtítulo urgente en pantalla

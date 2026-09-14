@@ -29,8 +29,9 @@ namespace RadioYJusticia.Justice
                 {
                     NativeFunction.Natives.PLAY_SOUND_FRONTEND(-1, "SELECT", "HUD_FRONTEND_DEFAULT_SOUNDSET", false);
                 }
-                catch
+                catch (Exception ex)
                 {
+                    Game.LogTrivial("RadioYJusticia.TrialSimulator.ExecuteFastTrial (Audio): " + ex.Message);
                 }
 
                 if (tirada < probCondena)

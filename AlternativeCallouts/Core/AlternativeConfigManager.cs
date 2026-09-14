@@ -38,7 +38,11 @@ namespace AlternativeCallouts.Core
                 if (_ini == null) return true;
                 return _ini.ReadBoolean(calloutName, "Enabled", true);
             }
-            catch { return true; }
+            catch (Exception ex)
+            {
+                Game.LogTrivial("AlternativeCallouts.AlternativeConfigManager.IsCalloutEnabled: " + ex.Message);
+                return true;
+            }
         }
 
         public static int GetForcedOutcome(string calloutName)
@@ -48,7 +52,11 @@ namespace AlternativeCallouts.Core
                 if (_ini == null) return -1;
                 return _ini.ReadInt32(calloutName, "ForceOutcome", -1);
             }
-            catch { return -1; }
+            catch (Exception ex)
+            {
+                Game.LogTrivial("AlternativeCallouts.AlternativeConfigManager.GetForcedOutcome: " + ex.Message);
+                return -1;
+            }
         }
 
         private static void CreateDefaultIni()
@@ -63,7 +71,10 @@ namespace AlternativeCallouts.Core
                     sw.WriteLine();
                 }
             }
-            catch { }
+            catch (Exception ex)
+            {
+                Game.LogTrivial("AlternativeCallouts.AlternativeConfigManager.CreateDefaultIni: " + ex.Message);
+            }
         }
     }
 }

@@ -47,19 +47,19 @@ namespace AlternativeCallouts.Core
         {
             for (int i = 0; i < _fibers.Count; i++)
             {
-                try { if (_fibers[i] != null && _fibers[i].IsAlive) _fibers[i].Abort(); } catch { }
+                try { if (_fibers[i] != null && _fibers[i].IsAlive) _fibers[i].Abort(); } catch (Exception ex) { Game.LogTrivial("AlternativeCallouts.AlternativeCleanupManager.CleanAll_Fibers: " + ex.Message); }
             }
             _fibers.Clear();
 
             for (int i = 0; i < _customCleanups.Count; i++)
             {
-                try { if (_customCleanups[i] != null) _customCleanups[i](); } catch { }
+                try { if (_customCleanups[i] != null) _customCleanups[i](); } catch (Exception ex) { Game.LogTrivial("AlternativeCallouts.AlternativeCleanupManager.CleanAll_Custom: " + ex.Message); }
             }
             _customCleanups.Clear();
 
             for (int i = 0; i < _blips.Count; i++)
             {
-                try { if (_blips[i] != null && _blips[i].Exists()) { _blips[i].DisableRoute(); _blips[i].Delete(); } } catch { }
+                try { if (_blips[i] != null && _blips[i].Exists()) { _blips[i].DisableRoute(); _blips[i].Delete(); } } catch (Exception ex) { Game.LogTrivial("AlternativeCallouts.AlternativeCleanupManager.CleanAll_Blips: " + ex.Message); }
             }
             _blips.Clear();
 
@@ -76,7 +76,10 @@ namespace AlternativeCallouts.Core
                         else { p.Tasks.Clear(); p.IsPersistent = false; p.Dismiss(); }
                     }
                 }
-                catch { }
+                catch (Exception ex)
+                {
+                    Game.LogTrivial("AlternativeCallouts.AlternativeCleanupManager.CleanAll_Peds: " + ex.Message);
+                }
             }
             _peds.Clear();
 
@@ -91,13 +94,16 @@ namespace AlternativeCallouts.Core
                         else { v.IsPersistent = false; v.Dismiss(); }
                     }
                 }
-                catch { }
+                catch (Exception ex)
+                {
+                    Game.LogTrivial("AlternativeCallouts.AlternativeCleanupManager.CleanAll_Vehicles: " + ex.Message);
+                }
             }
             _vehicles.Clear();
 
             for (int i = 0; i < _props.Count; i++)
             {
-                try { if (_props[i] != null && _props[i].Exists()) _props[i].Delete(); } catch { }
+                try { if (_props[i] != null && _props[i].Exists()) _props[i].Delete(); } catch (Exception ex) { Game.LogTrivial("AlternativeCallouts.AlternativeCleanupManager.CleanAll_Props: " + ex.Message); }
             }
             _props.Clear();
         }

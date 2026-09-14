@@ -210,7 +210,10 @@ namespace AlternativeCallouts.Core
                 NativeFunction.Natives.TASK_STAND_STILL(suspect, 15000);
                 Game.DisplaySubtitle(dialog);
             }
-            catch { }
+            catch (Exception ex)
+            {
+                Game.LogTrivial("AlternativeCallouts.BaseAlternativeCallout.TriggerDialogueAndSurrender: " + ex.Message);
+            }
         }
 
         protected void TriggerResistAndFight(Ped suspect, WeaponHash weapon, string shout)
@@ -229,7 +232,10 @@ namespace AlternativeCallouts.Core
                 }
                 Game.DisplaySubtitle(shout);
             }
-            catch { }
+            catch (Exception ex)
+            {
+                Game.LogTrivial("AlternativeCallouts.BaseAlternativeCallout.TriggerResistAndFight: " + ex.Message);
+            }
         }
 
         protected void TriggerFootPursuit(Ped runner, string shout)
@@ -249,7 +255,10 @@ namespace AlternativeCallouts.Core
                 Functions.SetPursuitIsActiveForPlayer(ActivePursuit, true);
                 Game.DisplaySubtitle(shout);
             }
-            catch { }
+            catch (Exception ex)
+            {
+                Game.LogTrivial("AlternativeCallouts.BaseAlternativeCallout.TriggerFootPursuit: " + ex.Message);
+            }
         }
 
         protected void TriggerVehiclePursuit(Ped runner, Vehicle vehicle, string shout)
@@ -281,7 +290,10 @@ namespace AlternativeCallouts.Core
                 });
                 Cleaner.RegisterFiber(fiber);
             }
-            catch { }
+            catch (Exception ex)
+            {
+                Game.LogTrivial("AlternativeCallouts.BaseAlternativeCallout.TriggerVehiclePursuit: " + ex.Message);
+            }
         }
 
         protected void TriggerSevereCrimeTwist(Ped suspect, WeaponHash weapon, string shout)
@@ -300,7 +312,10 @@ namespace AlternativeCallouts.Core
                 }
                 Game.DisplaySubtitle(shout);
             }
-            catch { }
+            catch (Exception ex)
+            {
+                Game.LogTrivial("AlternativeCallouts.BaseAlternativeCallout.TriggerSevereCrimeTwist: " + ex.Message);
+            }
         }
 
         // ---------------- Helpers de Spawneo y Limpieza ----------------
@@ -315,7 +330,10 @@ namespace AlternativeCallouts.Core
                     return groundZ;
                 }
             }
-            catch { }
+            catch (Exception ex)
+            {
+                Game.LogTrivial("AlternativeCallouts.BaseAlternativeCallout.GetGroundZ: " + ex.Message);
+            }
             return pos.Z;
         }
 
@@ -332,7 +350,11 @@ namespace AlternativeCallouts.Core
                 Cleaner.RegisterPed(p);
                 return p;
             }
-            catch { return null; }
+            catch (Exception ex)
+            {
+                Game.LogTrivial("AlternativeCallouts.BaseAlternativeCallout.SpawnPed: " + ex.Message);
+                return null;
+            }
         }
 
         protected Vehicle SpawnVehicle(string modelName, Vector3 position, float heading, bool snapToGround = true)
@@ -348,7 +370,11 @@ namespace AlternativeCallouts.Core
                 Vehicles.Add(v);
                 return v;
             }
-            catch { return null; }
+            catch (Exception ex)
+            {
+                Game.LogTrivial("AlternativeCallouts.BaseAlternativeCallout.SpawnVehicle: " + ex.Message);
+                return null;
+            }
         }
 
         protected Rage.Object SpawnProp(string modelName, Vector3 position, float heading)
@@ -364,7 +390,11 @@ namespace AlternativeCallouts.Core
                 ActiveProps.Add(prop);
                 return prop;
             }
-            catch { return null; }
+            catch (Exception ex)
+            {
+                Game.LogTrivial("AlternativeCallouts.BaseAlternativeCallout.SpawnProp: " + ex.Message);
+                return null;
+            }
         }
 
         protected Blip AttachBlipToSuspect(Ped suspect, Color color, float scale = 0.65f)
@@ -379,7 +409,11 @@ namespace AlternativeCallouts.Core
                 SuspectBlips[suspect] = b;
                 return b;
             }
-            catch { return null; }
+            catch (Exception ex)
+            {
+                Game.LogTrivial("AlternativeCallouts.BaseAlternativeCallout.AttachBlipToSuspect: " + ex.Message);
+                return null;
+            }
         }
 
         protected Blip AttachBlipToCivilian(Ped civ, Color color, float scale = 0.55f)
@@ -394,7 +428,11 @@ namespace AlternativeCallouts.Core
                 CivilianBlips[civ] = b;
                 return b;
             }
-            catch { return null; }
+            catch (Exception ex)
+            {
+                Game.LogTrivial("AlternativeCallouts.BaseAlternativeCallout.AttachBlipToCivilian: " + ex.Message);
+                return null;
+            }
         }
 
         protected void UpdateEntityBlips()
@@ -430,7 +468,10 @@ namespace AlternativeCallouts.Core
                 NativeFunction.Natives.SET_PED_SEEING_RANGE(ped, 80.0f);
                 NativeFunction.Natives.SET_PED_HEARING_RANGE(ped, 80.0f);
             }
-            catch { }
+            catch (Exception ex)
+            {
+                Game.LogTrivial("AlternativeCallouts.BaseAlternativeCallout.ConfigureCombatPed: " + ex.Message);
+            }
         }
 
         protected void NotifyCode4()

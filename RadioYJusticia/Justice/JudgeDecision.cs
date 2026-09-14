@@ -60,8 +60,9 @@ namespace RadioYJusticia.Justice
                 {
                     NativeFunction.Natives.PLAY_SOUND_FRONTEND(-1, "BASE_JUMP_PASSED", "HUD_AWARDS", false);
                 }
-                catch
+                catch (Exception ex)
                 {
+                    Game.LogTrivial("RadioYJusticia.JudgeDecision.DictateSentence (Audio): " + ex.Message);
                 }
 
                 string detalle = string.Format(

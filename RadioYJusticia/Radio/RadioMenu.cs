@@ -222,8 +222,9 @@ namespace RadioYJusticia.Radio
                     wantedLspdfr = persona.Wanted;
                 }
             }
-            catch
+            catch (Exception ex)
             {
+                Game.LogTrivial("RadioYJusticia.RadioMenu.OpenFastTrialMenu: " + ex.Message);
             }
 
             string dni = CustodyManager.GenerarDniEspanol(nombre);
@@ -336,8 +337,9 @@ namespace RadioYJusticia.Radio
                     {
                         isArrested = Functions.IsPedArrested(p);
                     }
-                    catch
+                    catch (Exception ex)
                     {
+                        Game.LogTrivial("RadioYJusticia.RadioMenu.GetNearestArrestedPed (IsPedArrested): " + ex.Message);
                     }
                     if (!isArrested)
                     {
@@ -345,8 +347,9 @@ namespace RadioYJusticia.Radio
                         {
                             isArrested = NativeFunction.Natives.IS_PED_CUFFED<bool>(p);
                         }
-                        catch
+                        catch (Exception ex)
                         {
+                            Game.LogTrivial("RadioYJusticia.RadioMenu.GetNearestArrestedPed (IS_PED_CUFFED): " + ex.Message);
                         }
                     }
 

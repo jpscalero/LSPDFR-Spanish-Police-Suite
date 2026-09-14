@@ -61,8 +61,9 @@ namespace RadioYJusticia.Justice
                         nombre = persona.FullName;
                     }
                 }
-                catch
+                catch (Exception ex)
                 {
+                    Game.LogTrivial("RadioYJusticia.CustodyManager.RegisterArrestedPed: " + ex.Message);
                 }
 
                 string dni = GenerarDniEspanol(nombre);
@@ -126,8 +127,9 @@ namespace RadioYJusticia.Justice
                 {
                     isArrested = Functions.IsPedArrested(p);
                 }
-                catch
+                catch (Exception ex)
                 {
+                    Game.LogTrivial("RadioYJusticia.CustodyManager.FindNearestArrestedPed (IsPedArrested): " + ex.Message);
                 }
 
                 if (!isArrested)
@@ -136,8 +138,9 @@ namespace RadioYJusticia.Justice
                     {
                         isArrested = NativeFunction.Natives.IS_PED_CUFFED<bool>(p);
                     }
-                    catch
+                    catch (Exception ex)
                     {
+                        Game.LogTrivial("RadioYJusticia.CustodyManager.FindNearestArrestedPed (IS_PED_CUFFED): " + ex.Message);
                     }
                 }
 
