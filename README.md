@@ -4,10 +4,14 @@
 [![Platform](https://img.shields.io/badge/Platform-GTA%20V%20%7C%20PC-brightgreen.svg)]()
 [![Language](https://img.shields.io/badge/Language-C%23%205%20%7C%20.NET%204.8-purple.svg)]()
 [![Status](https://img.shields.io/badge/Status-100%25%20Verified%20%7C%20Zero%20Errors-success.svg)]()
+[![Manual Jurídico](https://img.shields.io/badge/Manual-Jur%C3%ADdico%20Policial-darkblue.svg)](MANUAL_JURIDICO_POLICIAL.md)
 
 **LSPDFR Spanish Police Suite** es la recreación y modernización más completa, avanzada y realista del servicio policial en España para **Grand Theft Auto V / LSPDFR**.
 
 Reemplaza y amplía al **100%** las funciones de los clásicos *StopThePed* y *UltimateBackup*, añadiendo una simulación integral del **Cuerpo Nacional de Policía (CNP)** y la **Guardia Civil**, con legislación española real (LECrim y Código Penal), telecomunicaciones SIRDEE con voces y códigos 10, botiquín táctico IFAK, asaltos tácticos CQB, y **27 misiones de intervención especial**.
+
+> [!TIP]
+> 📚 **Manual Jurídico-Policial Oficial**: Puedes consultar el compendio legal completo en el **[Manual Práctico de Actuación Jurídico-Policial](MANUAL_JURIDICO_POLICIAL.md)**, con toda la legislación (Constitución Española, LO 2/1986 de FCS, LO 4/2015 de Seguridad Ciudadana, LECrim, Código Penal, normativa de Tráfico DGT, escala de uso de la fuerza y redacción de atestados).
 
 ---
 
