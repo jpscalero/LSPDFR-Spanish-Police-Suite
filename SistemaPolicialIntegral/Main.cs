@@ -14,13 +14,27 @@ namespace SistemaPolicialIntegral
     {
         public override void Initialize()
         {
-            Functions.OnOnDutyStateChanged += OnOnDutyStateChangedHandler;
-            Game.LogTrivial("SistemaPolicialIntegral: Plugin cargado correctamente.");
+            try
+            {
+                Functions.OnOnDutyStateChanged += OnOnDutyStateChangedHandler;
+                Game.LogTrivial("SistemaPolicialIntegral: Plugin cargado correctamente.");
+            }
+            catch (Exception ex)
+            {
+                Game.LogTrivial("SistemaPolicialIntegral: Error critico en Initialize: " + ex.Message);
+            }
         }
 
         public override void Finally()
         {
-            Game.LogTrivial("SistemaPolicialIntegral: Plugin descargado.");
+            try
+            {
+                Game.LogTrivial("SistemaPolicialIntegral: Plugin descargado.");
+            }
+            catch (Exception ex)
+            {
+                Game.LogTrivial("SistemaPolicialIntegral: Error en Finally: " + ex.Message);
+            }
         }
 
         private static void OnOnDutyStateChangedHandler(bool onDuty)

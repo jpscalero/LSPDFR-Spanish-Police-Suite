@@ -11,8 +11,15 @@ namespace RadioYJusticia
     {
         public override void Initialize()
         {
-            Functions.OnOnDutyStateChanged += OnDutyHandler;
-            Game.LogTrivial("RadioYJusticia: Plugin inicializado con exito.");
+            try
+            {
+                Functions.OnOnDutyStateChanged += OnDutyHandler;
+                Game.LogTrivial("RadioYJusticia: Plugin inicializado con exito.");
+            }
+            catch (Exception ex)
+            {
+                Game.LogTrivial("RadioYJusticia: Error critico en Initialize: " + ex.Message);
+            }
         }
 
         public override void Finally()

@@ -19,14 +19,28 @@ namespace PoliceLifeSystem
     {
         public override void Initialize()
         {
-            Functions.OnOnDutyStateChanged += OnOnDutyStateChangedHandler;
-            Game.LogTrivial("PoliceLifeSystem: Plugin registrado en LSPDFR.");
+            try
+            {
+                Functions.OnOnDutyStateChanged += OnOnDutyStateChangedHandler;
+                Game.LogTrivial("PoliceLifeSystem: Plugin registrado en LSPDFR.");
+            }
+            catch (Exception ex)
+            {
+                Game.LogTrivial("PoliceLifeSystem: Error critico en Initialize: " + ex.Message);
+            }
         }
 
         public override void Finally()
         {
-            SaveManager.Save();
-            Game.LogTrivial("PoliceLifeSystem: Plugin descargado y datos guardados correctamente.");
+            try
+            {
+                SaveManager.Save();
+                Game.LogTrivial("PoliceLifeSystem: Plugin descargado y datos guardados correctamente.");
+            }
+            catch (Exception ex)
+            {
+                Game.LogTrivial("PoliceLifeSystem: Error en Finally: " + ex.Message);
+            }
         }
 
         private static void OnOnDutyStateChangedHandler(bool onDuty)

@@ -13,8 +13,15 @@ namespace TacticalOps
     {
         public override void Initialize()
         {
-            Functions.OnOnDutyStateChanged += OnOnDutyStateChangedHandler;
-            Game.LogTrivial("TacticalOps: Plugin cargado correctamente.");
+            try
+            {
+                Functions.OnOnDutyStateChanged += OnOnDutyStateChangedHandler;
+                Game.LogTrivial("TacticalOps: Plugin cargado correctamente.");
+            }
+            catch (Exception ex)
+            {
+                Game.LogTrivial("TacticalOps: Error critico en Initialize: " + ex.Message);
+            }
         }
 
         public override void Finally()

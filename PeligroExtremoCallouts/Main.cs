@@ -10,13 +10,27 @@ namespace PeligroExtremoCallouts
     {
         public override void Initialize()
         {
-            Functions.OnOnDutyStateChanged += OnOnDutyStateChangedHandler;
-            Game.LogTrivial("PeligroExtremoCallouts: Plugin cargado y a la espera de entrada en servicio.");
+            try
+            {
+                Functions.OnOnDutyStateChanged += OnOnDutyStateChangedHandler;
+                Game.LogTrivial("PeligroExtremoCallouts: Plugin cargado y a la espera de entrada en servicio.");
+            }
+            catch (Exception ex)
+            {
+                Game.LogTrivial("PeligroExtremoCallouts: Error critico en Initialize: " + ex.Message);
+            }
         }
 
         public override void Finally()
         {
-            Game.LogTrivial("PeligroExtremoCallouts: Plugin descargado correctamente.");
+            try
+            {
+                Game.LogTrivial("PeligroExtremoCallouts: Plugin descargado correctamente.");
+            }
+            catch (Exception ex)
+            {
+                Game.LogTrivial("PeligroExtremoCallouts: Error en Finally: " + ex.Message);
+            }
         }
 
         private static void OnOnDutyStateChangedHandler(bool onDuty)

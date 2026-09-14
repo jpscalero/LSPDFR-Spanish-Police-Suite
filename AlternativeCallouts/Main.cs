@@ -9,13 +9,27 @@ namespace AlternativeCallouts
     {
         public override void Initialize()
         {
-            Functions.OnOnDutyStateChanged += OnOnDutyStateChangedHandler;
-            Game.LogTrivial("AlternativeCallouts: Plugin cargado satisfactoriamente.");
+            try
+            {
+                Functions.OnOnDutyStateChanged += OnOnDutyStateChangedHandler;
+                Game.LogTrivial("AlternativeCallouts: Plugin cargado satisfactoriamente.");
+            }
+            catch (Exception ex)
+            {
+                Game.LogTrivial("AlternativeCallouts: Error critico en Initialize: " + ex.Message);
+            }
         }
 
         public override void Finally()
         {
-            Game.LogTrivial("AlternativeCallouts: Plugin descargado.");
+            try
+            {
+                Game.LogTrivial("AlternativeCallouts: Plugin descargado.");
+            }
+            catch (Exception ex)
+            {
+                Game.LogTrivial("AlternativeCallouts: Error en Finally: " + ex.Message);
+            }
         }
 
         private static void OnOnDutyStateChangedHandler(bool onDuty)
@@ -24,15 +38,23 @@ namespace AlternativeCallouts
             {
                 GameFiber.StartNew(delegate
                 {
-                    AlternativeConfigManager.LoadConfig();
-                    CalloutRegistry.RegisterAllCallouts();
+                    try
+                    {
+                        AlternativeConfigManager.LoadConfig();
+                        CalloutRegistry.RegisterAllCallouts();
 
-                    Game.DisplayNotification(
-                        "3dtextures", "mpgroundlogo_cops",
-                        "~b~Llamadas Alternativas~s~",
-                        "~g~Cargado y Activo~s~",
-                        "~w~25 llamadas con ~y~minimo 5 desenlaces alternativos~w~ cada una listas para despacho."
-                    );
+                        Game.DisplayNotification(
+                            "3dtextures", "mpgroundlogo_cops",
+                            "~b~Llamadas Alternativas~s~",
+                            "~g~Cargado y Activo~s~",
+                            "~w~25 llamadas con ~y~minimo 5 desenlaces alternativos~w~ cada una listas para despacho."
+                        );
+                        Game.LogTrivial("AlternativeCallouts: 25 llamadas alternativas registradas correctamente.");
+                    }
+                    catch (Exception ex)
+                    {
+                        Game.LogTrivial("AlternativeCallouts: Error al inicializar en OnDuty: " + ex.Message);
+                    }
                 });
             }
         }

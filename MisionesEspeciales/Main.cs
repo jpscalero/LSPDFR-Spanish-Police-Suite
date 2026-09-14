@@ -13,13 +13,27 @@ namespace MisionesEspeciales
     {
         public override void Initialize()
         {
-            Functions.OnOnDutyStateChanged += OnOnDutyStateChangedHandler;
-            Game.LogTrivial("MisionesEspeciales: Plugin inicializado con 27 llamadas policiales de élite.");
+            try
+            {
+                Functions.OnOnDutyStateChanged += OnOnDutyStateChangedHandler;
+                Game.LogTrivial("MisionesEspeciales: Plugin inicializado con 27 llamadas policiales de élite.");
+            }
+            catch (Exception ex)
+            {
+                Game.LogTrivial("MisionesEspeciales: Error critico en Initialize: " + ex.Message);
+            }
         }
 
         public override void Finally()
         {
-            Game.LogTrivial("MisionesEspeciales: Plugin descargado.");
+            try
+            {
+                Game.LogTrivial("MisionesEspeciales: Plugin descargado.");
+            }
+            catch (Exception ex)
+            {
+                Game.LogTrivial("MisionesEspeciales: Error en Finally: " + ex.Message);
+            }
         }
 
         private static void OnOnDutyStateChangedHandler(bool onDuty)

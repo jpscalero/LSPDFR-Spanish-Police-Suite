@@ -10,13 +10,27 @@ namespace TacticalAndFederalCallouts
     {
         public override void Initialize()
         {
-            Functions.OnOnDutyStateChanged += OnOnDutyStateChangedHandler;
-            Game.LogTrivial("TacticalAndFederalCallouts: Plugin cargado y a la espera de entrada en servicio.");
+            try
+            {
+                Functions.OnOnDutyStateChanged += OnOnDutyStateChangedHandler;
+                Game.LogTrivial("TacticalAndFederalCallouts: Plugin cargado y a la espera de entrada en servicio.");
+            }
+            catch (Exception ex)
+            {
+                Game.LogTrivial("TacticalAndFederalCallouts: Error critico en Initialize: " + ex.Message);
+            }
         }
 
         public override void Finally()
         {
-            Game.LogTrivial("TacticalAndFederalCallouts: Plugin descargado correctamente.");
+            try
+            {
+                Game.LogTrivial("TacticalAndFederalCallouts: Plugin descargado correctamente.");
+            }
+            catch (Exception ex)
+            {
+                Game.LogTrivial("TacticalAndFederalCallouts: Error en Finally: " + ex.Message);
+            }
         }
 
         private static void OnOnDutyStateChangedHandler(bool onDuty)
