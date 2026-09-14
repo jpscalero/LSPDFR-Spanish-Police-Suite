@@ -117,15 +117,16 @@ Reemplaza y amplía al **100%** las funciones de los clásicos *StopThePed* y *U
 El proyecto está diseñado bajo el estándar estricto de **C# 5** compatible con el compilador nativo de Windows `.NET Framework 4.8` (`csc.exe`):
 
 ```powershell
-python scratch/build_spi.py
-python scratch/build_extended_suite.py
+python tests/build_spi.py
+python tests/build_extended_suite.py
 ```
 
-### Verificación Automatizada
-Ejecución de la batería de pruebas de sintaxis, enlace y despliegue (449 pruebas verificadas):
+### ✅ Verificación Automatizada (449 Pruebas Superadas)
+Toda la suite ha sido validada exhaustivamente mediante pruebas de sintaxis C# 5, algoritmos oficiales y despliegue:
 ```powershell
-python scratch/verify_master_all.py
+python tests/verify_master_all.py
 ```
+👉 **[Consulta el Informe de Verificación Completo (449/449 Superadas)](INFORME_DE_VERIFICACION.md)** con el desglose pormenorizado de todas las pruebas.
 
 ---
 
