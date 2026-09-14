@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+    ============================================================
+      CompuLite - CÓDIGO PENAL ESPAÑOL (LSPDFR Spanish Suite)
+      Compendio adaptado a la legislación penal española vigente.
+    ============================================================
+-->
+<CompuLiteCharges>
+
+	<!-- ===================== DELITOS CONTRA LA SEGURIDAD VIAL ===================== -->
+	<ChargeGroup name="Delitos contra la Seguridad Vial (CP)">
+		<Charge name="Art. 379.2 CP - Alcoholemia Penal (>0.60 mg/l)" traffic="true" fine="1000" susp_chance="100" min_susp="12" max_susp="48" revoke_chance="30" probation_chance="70" min_months="3" max_months="6"/>
+		<Charge name="Art. 379.1 CP - Exceso Grave Velocidad (+60/+80)" traffic="true" fine="800" susp_chance="100" min_susp="12" max_susp="48" revoke_chance="20" probation_chance="80" min_months="3" max_months="6"/>
+		<Charge name="Art. 380 CP - Conduccion Temeraria Manifiesta" traffic="true" fine="1500" susp_chance="100" min_susp="12" max_susp="72" revoke_chance="50" probation_chance="50" min_months="6" max_years="2"/>
+		<Charge name="Art. 381 CP - Conduccion Kamikaze / Desprecio Vital" traffic="true" fine="3000" susp_chance="100" min_susp="72" max_susp="120" revoke_chance="100" probation_chance="20" min_years="2" max_years="5"/>
+		<Charge name="Art. 383 CP - Negativa a Someterse a Pruebas" traffic="true" fine="1200" susp_chance="100" min_susp="12" max_susp="48" revoke_chance="40" probation_chance="60" min_months="6" max_years="1"/>
+		<Charge name="Art. 384 CP - Conducir sin Permiso o Puntos" traffic="true" fine="1000" susp_chance="50" min_susp="12" max_susp="24" revoke_chance="20" probation_chance="80" min_months="3" max_months="6"/>
+		<Charge name="Art. 385 CP - Grave Riesgo Calzada u Obstaculos" traffic="true" fine="1500" susp_chance="70" min_susp="12" max_susp="36" revoke_chance="30" probation_chance="60" min_months="6" max_years="2"/>
+	</ChargeGroup>
+
+	<!-- ===================== ORDEN PÚBLICO Y AUTORIDAD ===================== -->
+	<ChargeGroup name="Delitos contra el Orden Publico y Autoridad">
+		<Charge name="Art. 550 CP - Atentado contra Agentes Autoridad" fine="3000" probation_chance="30" min_years="1" max_years="4"/>
+		<Charge name="Art. 556 CP - Resistencia y Desobediencia Grave" fine="1000" probation_chance="70" min_months="3" max_years="1"/>
+		<Charge name="Art. 557 CP - Desordenes Publicos Graves" fine="2000" probation_chance="50" min_months="6" max_years="3"/>
+		<Charge name="Art. 564 CP - Tenencia Ilicita de Armas de Fuego" fine="3000" probation_chance="40" min_years="1" max_years="3"/>
+		<Charge name="Art. 558 CP - Perturbacion Grave Audiencias Judiciales" fine="1500" probation_chance="60" min_months="3" max_months="6"/>
+	</ChargeGroup>
+
+	<!-- ===================== CONTRA LAS PERSONAS Y LIBERTAD ===================== -->
+	<ChargeGroup name="Delitos contra la Vida e Integridad">
+		<Charge name="Art. 138 CP - Homicidio Doloso" fine_k="50" probation_chance="0" min_years="10" max_years="15"/>
+		<Charge name="Art. 139 CP - Asesinato Cualificado" fine_k="100" probation_chance="0" min_years="15" max_years="25"/>
+		<Charge name="Art. 147 CP - Lesiones Tratamiento Medico-Quirurgico" fine="2000" probation_chance="60" min_months="3" max_years="3"/>
+		<Charge name="Art. 148 CP - Lesiones Agravadas con Armas" fine="5000" probation_chance="30" min_years="2" max_years="5"/>
+		<Charge name="Art. 163 CP - Detencion Ilegal y Secuestro" fine_k="20" probation_chance="10" min_years="4" max_years="10"/>
+		<Charge name="Art. 169 CP - Amenazas Graves Constitutivas de Delito" fine="1500" probation_chance="50" min_years="1" max_years="5"/>
+		<Charge name="Art. 171 CP - Coacciones Ilegitimas" fine="1000" probation_chance="70" min_months="6" max_years="3"/>
+	</ChargeGroup>
+
+	<!-- ===================== VIOLENCIA DE GÉNERO Y FAMILIAR (UFAM) ===================== -->
+	<ChargeGroup name="Violencia de Genero y Domestica (UFAM)">
+		<Charge name="Art. 153 CP - Maltrato en Ambito Familiar / Genero" fine="1500" probation_chance="40" min_months="6" max_years="1"/>
+		<Charge name="Art. 173.2 CP - Violencia Habitual Familiar" fine="3000" probation_chance="20" min_months="6" max_years="3"/>
+		<Charge name="Art. 468 CP - Quebrantamiento Medida Cautelar / Alejamiento" fine="2000" probation_chance="10" min_months="6" max_years="1"/>
+	</ChargeGroup>
+
+	<!-- ===================== CONTRA EL PATRIMONIO ===================== -->
+	<ChargeGroup name="Delitos contra el Patrimonio">
+		<Charge name="Art. 237 CP - Robo con Violencia o Intimidacion" fine="3000" probation_chance="25" min_years="2" max_years="5"/>
+		<Charge name="Art. 238 CP - Robo con Fuerza en las Cosas" fine="2000" probation_chance="40" min_years="1" max_years="3"/>
+		<Charge name="Art. 234 CP - Hurto Patrimonial (>400 euros)" fine="1000" probation_chance="70" min_months="6" max_months="18"/>
+		<Charge name="Art. 244 CP - Robo y Hurto de Uso de Vehiculo" fine="1500" probation_chance="50" min_months="6" max_years="2"/>
+		<Charge name="Art. 248 CP - Estafa Economica" fine="2500" probation_chance="60" min_months="6" max_years="3"/>
+		<Charge name="Art. 263 CP - Daños Graves a la Propiedad" fine="1500" probation_chance="65" min_years="1" max_years="3"/>
+	</ChargeGroup>
+
+	<!-- ===================== SALUD PÚBLICA / DROGAS ===================== -->
+	<ChargeGroup name="Delitos contra la Salud Publica (Drogas)">
+		<Charge name="Art. 368 CP - Trafico Sustancias Grave Daño (Cocaina/Heroina)" fine_k="30" probation_chance="15" min_years="3" max_years="6"/>
+		<Charge name="Art. 368 CP - Trafico Sustancias Menor Daño (Cannabis)" fine_k="10" probation_chance="40" min_years="1" max_years="3"/>
+		<Charge name="Art. 369 CP - Trafico Drogas Agravado Notoria Importancia" fine_k="100" probation_chance="0" min_years="6" max_years="9"/>
+	</ChargeGroup>
+
+	<!-- ===================== MEDIO AMBIENTE Y ANIMALES (SEPRONA) ===================== -->
+	<ChargeGroup name="Delitos contra el Medio Ambiente (SEPRONA)">
+		<Charge name="Art. 325 CP - Vertidos Toxicos Industriales" fine_k="20" probation_chance="50" min_months="6" max_years="2"/>
+		<Charge name="Art. 335 CP - Caza Furtiva o Pesca Especies Protegidas" fine="4000" probation_chance="70" min_months="8" max_months="24"/>
+		<Charge name="Art. 340 bis CP - Maltrato Animal Domestico Grave" fine="3000" probation_chance="40" min_months="3" max_months="18"/>
+		<Charge name="Art. 351 CP - Incendio Forestal con Peligro para la Vida" fine_k="50" probation_chance="0" min_years="10" max_years="20"/>
+		<Charge name="Art. 352 CP - Incendio de Masas Forestales" fine_k="15" probation_chance="20" min_years="1" max_years="5"/>
+	</ChargeGroup>
+
+</CompuLiteCharges>

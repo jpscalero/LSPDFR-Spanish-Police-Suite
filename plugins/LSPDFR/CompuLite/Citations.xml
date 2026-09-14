@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+    ============================================================
+      CompuLite - INFRACCIONES DE TRÁFICO Y SEGURIDAD CIUDADANA
+      Cuadro de sanciones DGT (Ley de Tráfico) y LO 4/2015 (LOSC)
+    ============================================================
+-->
+<CompuLiteCitations>
+
+	<!-- ===================== SEGURIDAD VIAL (DGT) ===================== -->
+	<CitationGroup name="Infracciones de Trafico y Alcoholemia (DGT)">
+		<Citation name="Art. 20 RGC - Alcoholemia Administrativa (0.25 - 0.50 mg/l)" fine="500"/>
+		<Citation name="Art. 20 RGC - Alcoholemia Administrativa (>0.50 mg/l)" fine="1000"/>
+		<Citation name="Art. 14 LSV - Presencia de Drogas en el Organismo" fine="1000"/>
+		<Citation name="Art. 76.g LSV - Uso Manual del Telefono Movil al Volante" fine="200"/>
+		<Citation name="Art. 76.h LSV - No Utilizar Cinturon de Seguridad o Casco" fine="200"/>
+		<Citation name="Art. 76.c LSV - Saltarse Semaforo Rojo o Señal de STOP" fine="200"/>
+		<Citation name="Art. 76.m LSV - Conduccion Negligente con Riesgo" fine="200"/>
+		<Citation name="Art. 76.o LSV - Circular sin Inspeccion Tecnica (ITV)" fine="200"/>
+		<Citation name="Art. 2 SOA - Circular sin Seguro Obligatorio de Vehiculo" fine="1500"/>
+	</CitationGroup>
+
+	<!-- ===================== EXCESOS DE VELOCIDAD (DGT) ===================== -->
+	<CitationGroup name="Excesos de Velocidad Cinemometro (DGT)">
+		<Citation name="Exceso de Velocidad Leve (1 a 15 km/h sobre el limite)" fine="100"/>
+		<Citation name="Exceso de Velocidad Grave (16 a 30 km/h sobre el limite)" fine="300"/>
+		<Citation name="Exceso de Velocidad Muy Grave (31 a 50 km/h sobre el limite)" fine="500"/>
+		<Citation name="Exceso de Velocidad Extremo (>50 km/h sobre el limite)" fine="600"/>
+	</CitationGroup>
+
+	<!-- ===================== SEGURIDAD CIUDADANA (LO 4/2015) ===================== -->
+	<CitationGroup name="Seguridad Ciudadana (LO 4/2015 - LOSC)">
+		<Citation name="Art. 37.4 LOSC - Falta de Respeto o Insulto a Policia" fine="100"/>
+		<Citation name="Art. 36.6 LOSC - Desobediencia o Resistencia Leve a Agentes" fine="601"/>
+		<Citation name="Art. 36.16 LOSC - Consumo o Tenencia de Drogas en Via Publica" fine="601"/>
+		<Citation name="Art. 36.10 LOSC - Porte o Exhibicion de Armas Blancas Prohibidas" fine="601"/>
+		<Citation name="Art. 37.1 LOSC - Ocupacion u Obstruccion de Via Publica" fine="200"/>
+	</CitationGroup>
+
+</CompuLiteCitations>

@@ -24,6 +24,24 @@
 
 ---
 
+## 🎮 CÓMO CONSULTAR Y APLICAR EL MARCO JURÍDICO DENTRO DEL JUEGO (GTA V)
+
+El marco legal completo está 100% implementado y disponible de forma interactiva mientras patrullas:
+
+1. **Consulta Interactiva del Manual en Servicio**:
+   - Pulsa **`F10`** (Terminal SITEL) o **`F9`** (Menú de Intervención) y selecciona **`📖 Manual Jurídico Policial`**.
+   - Navega por cualquiera de los 8 Títulos para desplegar en pantalla fichas jurídicas completas con notificaciones sonoras policiales, artículos legales aplicables y protocolos operativos.
+2. **Imposición de Sanciones DGT en Vía Pública**:
+   - En **`F10`** $\rightarrow$ **`Sanciones DGT`**: Selecciona la infracción observada (velocidad, semáforo, alcoholemia administrativa, móvil, cinturón, etc.). El sistema generará el boletín de denuncia formal con importe en euros y retirada exacta de puntos.
+3. **Instrucción de Atestados del Código Penal**:
+   - En **`F10`** $\rightarrow$ **`Redactar Atestado Penal`**: Imputa delitos penales (atentado, drogas, violencia de género UFAM, alcoholemia penal Art. 379.2, homicidio, etc.) con sus marcos de penas y remisión al Juzgado de Guardia.
+4. **Juicios y Sentencias Reales (`RadioYJusticia`)**:
+   - Trasladado el detenido y finalizado el plazo de custodia de 72 horas, el simulador de juicios emitirá resoluciones motivadas con aplicación del Código Penal español y agravantes de reincidencia (Art. 22.8 CP).
+5. **Compatibilidad con CompuLite MDT**:
+   - Si utilizas el ordenador policial CompuLite, se incluyen los archivos `Charges.xml` y `Citations.xml` en español con todos los delitos y multas de España en `plugins/LSPDFR/CompuLite/`.
+
+---
+
 ## TÍTULO I: MARCO CONSTITUCIONAL Y PRINCIPIOS BÁSICOS DE ACTUACIÓN
 
 ### 1.1. Constitución Española de 1978 (CE)

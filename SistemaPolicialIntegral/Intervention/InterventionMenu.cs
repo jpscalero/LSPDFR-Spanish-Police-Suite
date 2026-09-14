@@ -39,6 +39,7 @@ namespace SistemaPolicialIntegral.Intervention
             UIMenuItem itemBajarCoche = new UIMenuItem("Ordenar Apearse del Vehiculo", "Ordena al conductor detenido que descienda del vehiculo.");
 
             UIMenuItem itemLiberar = new UIMenuItem("Dejar ir", "Finaliza la intervencion y permite que se marche.");
+            UIMenuItem itemManual = new UIMenuItem("📖 Manual Jurídico Policial", "Consulta interactiva de leyes, penas y doctrina policial.");
 
             menu.AddItem(itemDni);
             menu.AddItem(itemAlcoholemia);
@@ -56,6 +57,10 @@ namespace SistemaPolicialIntegral.Intervention
             menu.AddItem(itemVentanilla);
             menu.AddItem(itemBajarCoche);
             menu.AddItem(itemLiberar);
+            menu.AddItem(itemManual);
+
+            UIMenu subManual = SistemaPolicialIntegral.MDT.ManualJuridicoMenu.CreateMenu(pool);
+            menu.BindMenuToItem(subManual, itemManual);
 
             menu.OnItemSelect += delegate (UIMenu sender, UIMenuItem selectedItem, int index)
             {
