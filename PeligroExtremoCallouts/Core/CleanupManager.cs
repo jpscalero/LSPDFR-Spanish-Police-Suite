@@ -67,7 +67,10 @@ namespace PeligroExtremoCallouts.Core
                         blip.Delete();
                     }
                 }
-                catch { }
+                catch (Exception ex)
+                {
+                    Game.LogTrivial("PeligroExtremoCallouts.CleanupManager.UnregisterBlip: " + ex.Message);
+                }
                 _blips.Remove(blip);
             }
         }
@@ -89,7 +92,10 @@ namespace PeligroExtremoCallouts.Core
                         f.Abort();
                     }
                 }
-                catch { }
+                catch (Exception ex)
+                {
+                    Game.LogTrivial("PeligroExtremoCallouts.CleanupManager.CleanAll_Fibers: " + ex.Message);
+                }
             }
             _fibers.Clear();
 
@@ -105,7 +111,10 @@ namespace PeligroExtremoCallouts.Core
                         b.Delete();
                     }
                 }
-                catch { }
+                catch (Exception ex)
+                {
+                    Game.LogTrivial("PeligroExtremoCallouts.CleanupManager.CleanAll_Blips: " + ex.Message);
+                }
             }
             _blips.Clear();
 
@@ -132,7 +141,10 @@ namespace PeligroExtremoCallouts.Core
                         }
                     }
                 }
-                catch { }
+                catch (Exception ex)
+                {
+                    Game.LogTrivial("PeligroExtremoCallouts.CleanupManager.CleanAll_Peds: " + ex.Message);
+                }
             }
             _peds.Clear();
 
@@ -155,7 +167,10 @@ namespace PeligroExtremoCallouts.Core
                         }
                     }
                 }
-                catch { }
+                catch (Exception ex)
+                {
+                    Game.LogTrivial("PeligroExtremoCallouts.CleanupManager.CleanAll_Vehicles: " + ex.Message);
+                }
             }
             _vehicles.Clear();
 
@@ -171,7 +186,10 @@ namespace PeligroExtremoCallouts.Core
                         obj.Delete();
                     }
                 }
-                catch { }
+                catch (Exception ex)
+                {
+                    Game.LogTrivial("PeligroExtremoCallouts.CleanupManager.CleanAll_Props: " + ex.Message);
+                }
             }
             _props.Clear();
         }

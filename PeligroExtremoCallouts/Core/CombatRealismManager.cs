@@ -33,7 +33,10 @@ namespace PeligroExtremoCallouts.Core
                 NativeFunction.Natives.SET_PED_CAN_PEEK_IN_COVER(ped, true);
                 NativeFunction.Natives.SET_PED_FIRING_PATTERN(ped, unchecked((int)0xC6EE6B4C)); // FullAutomatic
             }
-            catch { }
+            catch (Exception ex)
+            {
+                Game.LogTrivial("PeligroExtremoCallouts.CombatRealismManager.ConfigureHostilePed: " + ex.Message);
+            }
         }
 
         public static void ProcessCombatTick(List<Ped> combatants, Ped player)
@@ -77,7 +80,10 @@ namespace PeligroExtremoCallouts.Core
                         TriggerTacticalSpeech(ped);
                     }
                 }
-                catch { }
+                catch (Exception ex)
+                {
+                    Game.LogTrivial("PeligroExtremoCallouts.CombatRealismManager.ProcessCombatTick: " + ex.Message);
+                }
             }
         }
 
@@ -96,7 +102,10 @@ namespace PeligroExtremoCallouts.Core
                 }
                 NativeFunction.Natives.PLAY_PED_AMBIENT_SPEECH_NATIVE(ped, "GENERIC_OUCH", "SPEECH_PARAMS_FORCE_SHOUTED");
             }
-            catch { }
+            catch (Exception ex)
+            {
+                Game.LogTrivial("PeligroExtremoCallouts.CombatRealismManager.TriggerArmorImpactEffect: " + ex.Message);
+            }
         }
 
         private static void ApplyInjuredWalkStyle(Ped ped)
@@ -109,7 +118,10 @@ namespace PeligroExtremoCallouts.Core
                     NativeFunction.Natives.SET_PED_MOVEMENT_CLIPSET(ped, "move_m@injured", 1.0f);
                 }
             }
-            catch { }
+            catch (Exception ex)
+            {
+                Game.LogTrivial("PeligroExtremoCallouts.CombatRealismManager.ApplyInjuredWalkStyle: " + ex.Message);
+            }
         }
 
         private static void ApplyCriticalWoundBehavior(Ped ped, Ped player)
@@ -125,7 +137,10 @@ namespace PeligroExtremoCallouts.Core
                 NativeFunction.Natives.SET_PED_ACCURACY(ped, 25);
                 NativeFunction.Natives.PLAY_PED_AMBIENT_SPEECH_NATIVE(ped, "GENERIC_CURSE_MED", "SPEECH_PARAMS_FORCE_SHOUTED");
             }
-            catch { }
+            catch (Exception ex)
+            {
+                Game.LogTrivial("PeligroExtremoCallouts.CombatRealismManager.ApplyCriticalWoundBehavior: " + ex.Message);
+            }
         }
 
         private static void TriggerTacticalSpeech(Ped ped)
@@ -136,7 +151,10 @@ namespace PeligroExtremoCallouts.Core
                 string shout = shouts[_rnd.Next(shouts.Length)];
                 NativeFunction.Natives.PLAY_PED_AMBIENT_SPEECH_NATIVE(ped, shout, "SPEECH_PARAMS_FORCE_SHOUTED");
             }
-            catch { }
+            catch (Exception ex)
+            {
+                Game.LogTrivial("PeligroExtremoCallouts.CombatRealismManager.TriggerTacticalSpeech: " + ex.Message);
+            }
         }
 
         public static void CleanupPed(Ped ped)

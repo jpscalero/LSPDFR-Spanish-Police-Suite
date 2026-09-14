@@ -41,7 +41,10 @@ namespace PeligroExtremoCallouts.Core
                     TriggerRadiatorSteam(vehicle);
                 }
             }
-            catch { }
+            catch (Exception ex)
+            {
+                Game.LogTrivial("PeligroExtremoCallouts.PursuitRealismManager.ProcessPursuitRealism: " + ex.Message);
+            }
         }
 
         private static void TriggerRimSparks(Vehicle vehicle)
@@ -58,7 +61,10 @@ namespace PeligroExtremoCallouts.Core
                     );
                 }
             }
-            catch { }
+            catch (Exception ex)
+            {
+                Game.LogTrivial("PeligroExtremoCallouts.PursuitRealismManager.TriggerRimSparks: " + ex.Message);
+            }
         }
 
         private static void TriggerRadiatorSteam(Vehicle vehicle)
@@ -75,7 +81,10 @@ namespace PeligroExtremoCallouts.Core
                     );
                 }
             }
-            catch { }
+            catch (Exception ex)
+            {
+                Game.LogTrivial("PeligroExtremoCallouts.PursuitRealismManager.TriggerRadiatorSteam: " + ex.Message);
+            }
         }
 
         public static void ExecuteTacticalBailout(Ped suspect, Vehicle vehicle, Ped player, bool aggressiveAmbush)
@@ -119,7 +128,10 @@ namespace PeligroExtremoCallouts.Core
                     });
                 }
             }
-            catch { }
+            catch (Exception ex)
+            {
+                Game.LogTrivial("PeligroExtremoCallouts.PursuitRealismManager.ExecuteTacticalBailout: " + ex.Message);
+            }
         }
     }
 }

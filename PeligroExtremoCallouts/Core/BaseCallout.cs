@@ -269,7 +269,10 @@ namespace PeligroExtremoCallouts.Core
                     return waterZ;
                 }
             }
-            catch { }
+            catch (Exception ex)
+            {
+                Game.LogTrivial("PeligroExtremoCallouts.BaseCallout.GetGroundZ: " + ex.Message);
+            }
             return pos.Z;
         }
 
@@ -297,8 +300,9 @@ namespace PeligroExtremoCallouts.Core
                 Cleaner.RegisterPed(p);
                 return p;
             }
-            catch
+            catch (Exception ex)
             {
+                Game.LogTrivial("PeligroExtremoCallouts.BaseCallout.SpawnPed: " + ex.Message);
                 return null;
             }
         }
@@ -327,8 +331,9 @@ namespace PeligroExtremoCallouts.Core
                 Vehicles.Add(v);
                 return v;
             }
-            catch
+            catch (Exception ex)
             {
+                Game.LogTrivial("PeligroExtremoCallouts.BaseCallout.SpawnVehicle: " + ex.Message);
                 return null;
             }
         }
@@ -348,8 +353,9 @@ namespace PeligroExtremoCallouts.Core
                 ActiveProps.Add(prop);
                 return prop;
             }
-            catch
+            catch (Exception ex)
             {
+                Game.LogTrivial("PeligroExtremoCallouts.BaseCallout.SpawnProp: " + ex.Message);
                 return null;
             }
         }
@@ -366,8 +372,9 @@ namespace PeligroExtremoCallouts.Core
                 SuspectBlips[suspect] = b;
                 return b;
             }
-            catch
+            catch (Exception ex)
             {
+                Game.LogTrivial("PeligroExtremoCallouts.BaseCallout.CreateSuspectBlip: " + ex.Message);
                 return null;
             }
         }
@@ -384,8 +391,9 @@ namespace PeligroExtremoCallouts.Core
                 VictimBlips[victim] = b;
                 return b;
             }
-            catch
+            catch (Exception ex)
             {
+                Game.LogTrivial("PeligroExtremoCallouts.BaseCallout.CreateVictimBlip: " + ex.Message);
                 return null;
             }
         }
@@ -453,7 +461,10 @@ namespace PeligroExtremoCallouts.Core
                 NativeFunction.Natives.SET_PED_TARGET_LOSS_RESPONSE(ped, 1); // Hunt / Search
                 NativeFunction.Natives.SET_PED_FLEE_ATTRIBUTES(ped, 0, false);
             }
-            catch { }
+            catch (Exception ex)
+            {
+                Game.LogTrivial("PeligroExtremoCallouts.BaseCallout.ConfigureHostilePed: " + ex.Message);
+            }
         }
 
         public void TriggerExplosion(Vector3 pos, int explosionType = 2, float damageScale = 5.0f)
@@ -462,7 +473,10 @@ namespace PeligroExtremoCallouts.Core
             {
                 NativeFunction.Natives.ADD_EXPLOSION(pos.X, pos.Y, pos.Z, explosionType, damageScale, true, false, 1.0f);
             }
-            catch { }
+            catch (Exception ex)
+            {
+                Game.LogTrivial("PeligroExtremoCallouts.BaseCallout.TriggerExplosion: " + ex.Message);
+            }
         }
 
         public void PlayPtfx(string asset, string effect, Vector3 pos, float scale = 1.0f)
@@ -483,7 +497,10 @@ namespace PeligroExtremoCallouts.Core
                     NativeFunction.Natives.START_PARTICLE_FX_NON_LOOPED_AT_COORD(effect, pos.X, pos.Y, pos.Z, 0f, 0f, 0f, scale, false, false, false);
                 }
             }
-            catch { }
+            catch (Exception ex)
+            {
+                Game.LogTrivial("PeligroExtremoCallouts.BaseCallout.PlayPtfx: " + ex.Message);
+            }
         }
 
         protected void NotifyCode4()

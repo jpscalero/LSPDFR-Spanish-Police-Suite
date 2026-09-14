@@ -42,7 +42,10 @@ namespace PeligroExtremoCallouts.Core
                     return true;
                 }
             }
-            catch { }
+            catch (Exception ex)
+            {
+                Game.LogTrivial("PeligroExtremoCallouts.TacticalNegotiationManager.EvaluateSurrenderConditions: " + ex.Message);
+            }
 
             return false;
         }
@@ -82,7 +85,10 @@ namespace PeligroExtremoCallouts.Core
                     }
                 });
             }
-            catch { }
+            catch (Exception ex)
+            {
+                Game.LogTrivial("PeligroExtremoCallouts.TacticalNegotiationManager.ExecuteSurrender: " + ex.Message);
+            }
         }
 
         public static bool IsSurrendered(Ped ped)

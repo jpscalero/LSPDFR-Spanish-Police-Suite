@@ -232,7 +232,10 @@ namespace PeligroExtremoCallouts.Core
                     return;
                 }
             }
-            catch { }
+            catch (Exception ex)
+            {
+                Game.LogTrivial("PeligroExtremoCallouts.BasePursuitCallout.Process: " + ex.Message);
+            }
 
             // Verificacion de estado de sospechosos con rango amplio anti-desaparicion
             bool anySuspectActive = false;
@@ -274,7 +277,10 @@ namespace PeligroExtremoCallouts.Core
                     Functions.ForceEndPursuit(Pursuit);
                 }
             }
-            catch { }
+            catch (Exception ex)
+            {
+                Game.LogTrivial("PeligroExtremoCallouts.BasePursuitCallout.End: " + ex.Message);
+            }
 
             base.End();
             PassengerSetups.Clear();

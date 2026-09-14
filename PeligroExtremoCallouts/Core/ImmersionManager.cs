@@ -18,7 +18,10 @@ namespace PeligroExtremoCallouts.Core
                 // Reproducir clave 10 con sonido de escáner policial nativo de LSPDFR
                 Functions.PlayScannerAudioUsingPosition("ATTENTION_ALL_UNITS " + callCode + " IN_OR_ON_POSITION", pos);
             }
-            catch { }
+            catch (Exception ex)
+            {
+                Game.LogTrivial("PeligroExtremoCallouts.ImmersionManager.PlayPoliceRadio: " + ex.Message);
+            }
         }
 
         public static void TakeForensicPhoto(Ped player, Vector3 evidencePos, string evidenceName)
@@ -47,7 +50,10 @@ namespace PeligroExtremoCallouts.Core
                     Game.DisplayNotification("3dtextures", "mpgroundlogo_cops", "~b~FIB Forense", "~y~Fotografía Documentada", "Prueba catalogada en cadena de custodia: " + evidenceName);
                 });
             }
-            catch { }
+            catch (Exception ex)
+            {
+                Game.LogTrivial("PeligroExtremoCallouts.ImmersionManager.TakeForensicPhoto: " + ex.Message);
+            }
         }
 
         public static void RequestCrimeSceneServices(Vector3 position, bool hasCasualties)
@@ -61,7 +67,10 @@ namespace PeligroExtremoCallouts.Core
                     Game.DisplaySubtitle("~g~[CODIGO 4]~w~ Escena asegurada. Servicios forenses y sanitarios en camino.");
                 }
             }
-            catch { }
+            catch (Exception ex)
+            {
+                Game.LogTrivial("PeligroExtremoCallouts.ImmersionManager.RequestCrimeSceneServices: " + ex.Message);
+            }
         }
     }
 }

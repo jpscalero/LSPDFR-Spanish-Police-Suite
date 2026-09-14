@@ -15,8 +15,9 @@ namespace PeligroExtremoCallouts.Core
             {
                 Game.DisplayNotification("3dtextures", "mpgroundlogo_cops", "~r~" + calloutName, "~y~" + stateSubtitle, messageBody);
             }
-            catch
+            catch (Exception ex)
             {
+                Game.LogTrivial("PeligroExtremoCallouts.DispatchHelper.SendDispatchNotification: " + ex.Message);
                 Game.DisplaySubtitle("~r~[" + calloutName + "]~w~ " + stateSubtitle);
             }
         }
@@ -75,7 +76,10 @@ namespace PeligroExtremoCallouts.Core
             {
                 Functions.PlayScannerAudioUsingPosition(audioString, position);
             }
-            catch { }
+            catch (Exception ex)
+            {
+                Game.LogTrivial("PeligroExtremoCallouts.DispatchHelper.PlayDispatchAudio: " + ex.Message);
+            }
         }
     }
 }

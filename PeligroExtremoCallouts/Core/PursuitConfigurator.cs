@@ -23,7 +23,10 @@ namespace PeligroExtremoCallouts.Core
                 NativeFunction.Natives.SET_DRIVE_TASK_CRUISE_SPEED(driver, maxSpeed);
                 NativeFunction.Natives.SET_DRIVE_TASK_DRIVING_STYLE(driver, drivingStyle);
             }
-            catch { }
+            catch (Exception ex)
+            {
+                Game.LogTrivial("PeligroExtremoCallouts.PursuitConfigurator.ConfigureAggressiveDriver: " + ex.Message);
+            }
         }
 
         public static void ConfigureWrongWayDriver(Ped driver, Vehicle vehicle, float maxSpeed = 50f)
@@ -40,7 +43,10 @@ namespace PeligroExtremoCallouts.Core
                 // DrivingStyle: 786603 | 262144 (ignora sentido de la circulacion y va en contramano)
                 NativeFunction.Natives.SET_DRIVE_TASK_DRIVING_STYLE(driver, 786603 | 262144);
             }
-            catch { }
+            catch (Exception ex)
+            {
+                Game.LogTrivial("PeligroExtremoCallouts.PursuitConfigurator.ConfigureWrongWayDriver: " + ex.Message);
+            }
         }
 
         public static void ConfigureEscortDriver(Ped driver, Vehicle escortVeh, Vehicle leadVeh, float speed = 40f)
@@ -55,7 +61,10 @@ namespace PeligroExtremoCallouts.Core
                 NativeFunction.Natives.SET_DRIVER_ABILITY(driver, 1.0f);
                 NativeFunction.Natives.TASK_VEHICLE_ESCORT(driver, escortVeh, leadVeh, -1, speed, 786603, 10f, 0, 15f);
             }
-            catch { }
+            catch (Exception ex)
+            {
+                Game.LogTrivial("PeligroExtremoCallouts.PursuitConfigurator.ConfigureEscortDriver: " + ex.Message);
+            }
         }
 
         public static void ConfigureRammingDriver(Ped driver, Vehicle vehicle, Ped targetPed, float speed = 45f)
@@ -71,7 +80,10 @@ namespace PeligroExtremoCallouts.Core
                 // Modo 6 en TASK_VEHICLE_MISSION_PED_TARGET corresponde a embestida violenta (Ramming/Follow)
                 NativeFunction.Natives.TASK_VEHICLE_MISSION_PED_TARGET(driver, vehicle, targetPed, 6, speed, 786603, 5f, 5f, true);
             }
-            catch { }
+            catch (Exception ex)
+            {
+                Game.LogTrivial("PeligroExtremoCallouts.PursuitConfigurator.ConfigureRammingDriver: " + ex.Message);
+            }
         }
 
         public static void ConfigureBoatDriver(Ped driver, Vehicle boat, Ped targetPlayer)
@@ -91,7 +103,10 @@ namespace PeligroExtremoCallouts.Core
                     NativeFunction.Natives.TASK_BOAT_MISSION(driver, boat, 0, 0, 0f, 0f, 0f, 1, 35f, 786603, 10f, 7);
                 }
             }
-            catch { }
+            catch (Exception ex)
+            {
+                Game.LogTrivial("PeligroExtremoCallouts.PursuitConfigurator.ConfigureBoatDriver: " + ex.Message);
+            }
         }
 
         public static void ConfigurePlanePilot(Ped pilot, Vehicle plane, Vector3 targetCoord)
@@ -104,7 +119,10 @@ namespace PeligroExtremoCallouts.Core
                 pilot.KeepTasks = true;
                 NativeFunction.Natives.TASK_PLANE_MISSION(pilot, plane, 0, 0, targetCoord.X, targetCoord.Y, targetCoord.Z + 150f, 4, 55f, 0f, 0f, 60f, 25f);
             }
-            catch { }
+            catch (Exception ex)
+            {
+                Game.LogTrivial("PeligroExtremoCallouts.PursuitConfigurator.ConfigurePlanePilot: " + ex.Message);
+            }
         }
 
         public static void ConfigureHeliPilot(Ped pilot, Vehicle heli, Ped targetPed)
@@ -123,7 +141,10 @@ namespace PeligroExtremoCallouts.Core
                 NativeFunction.Natives.SET_PED_COMBAT_ABILITY(pilot, 2); // Professional
                 NativeFunction.Natives.TASK_HELI_MISSION(pilot, heli, 0, targetPed, 0f, 0f, 0f, 4, 45f, 15f, 0f, 35, 25, 0f, 0);
             }
-            catch { }
+            catch (Exception ex)
+            {
+                Game.LogTrivial("PeligroExtremoCallouts.PursuitConfigurator.ConfigureHeliPilot: " + ex.Message);
+            }
         }
 
         public static void ConfigureDriveByShooter(Ped shooter, Ped target, WeaponHash weapon, int accuracy = 65)
@@ -153,7 +174,10 @@ namespace PeligroExtremoCallouts.Core
                     shooter.Tasks.FightAgainst(target);
                 }
             }
-            catch { }
+            catch (Exception ex)
+            {
+                Game.LogTrivial("PeligroExtremoCallouts.PursuitConfigurator.ConfigureDriveByShooter: " + ex.Message);
+            }
         }
 
         public static void EnableVehicleBailout(Ped ped)
@@ -166,7 +190,10 @@ namespace PeligroExtremoCallouts.Core
                 NativeFunction.Natives.SET_PED_COMBAT_ATTRIBUTES(ped, 3, true); // BF_LeaveVehicles = true
                 NativeFunction.Natives.SET_PED_COMBAT_MOVEMENT(ped, 2); // Advance
             }
-            catch { }
+            catch (Exception ex)
+            {
+                Game.LogTrivial("PeligroExtremoCallouts.PursuitConfigurator.EnableVehicleBailout: " + ex.Message);
+            }
         }
 
         public static void ReinforceVehicle(Vehicle vehicle, bool heavyArmor = false, float powerMultiplier = 1.0f)
@@ -188,7 +215,10 @@ namespace PeligroExtremoCallouts.Core
                     NativeFunction.Natives.SET_VEHICLE_ENGINE_POWER_MULTIPLIER(vehicle, powerMultiplier);
                 }
             }
-            catch { }
+            catch (Exception ex)
+            {
+                Game.LogTrivial("PeligroExtremoCallouts.PursuitConfigurator.ReinforceVehicle: " + ex.Message);
+            }
         }
     }
 }

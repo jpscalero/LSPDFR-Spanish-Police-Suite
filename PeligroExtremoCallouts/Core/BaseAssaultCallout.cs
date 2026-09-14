@@ -39,7 +39,10 @@ namespace PeligroExtremoCallouts.Core
                 Game.SetRelationshipBetweenRelationshipGroups(FriendlyGroup, copGroup, Relationship.Companion);
                 Game.SetRelationshipBetweenRelationshipGroups(copGroup, FriendlyGroup, Relationship.Companion);
             }
-            catch { }
+            catch (Exception ex)
+            {
+                Game.LogTrivial("PeligroExtremoCallouts.BaseAssaultCallout.InitializeRelationships: " + ex.Message);
+            }
         }
 
         protected override void OnPlayerArrival()
@@ -229,7 +232,10 @@ namespace PeligroExtremoCallouts.Core
                 Game.SetRelationshipBetweenRelationshipGroups(g1, g2, Relationship.Hate);
                 Game.SetRelationshipBetweenRelationshipGroups(g2, g1, Relationship.Hate);
             }
-            catch { }
+            catch (Exception ex)
+            {
+                Game.LogTrivial("PeligroExtremoCallouts.BaseAssaultCallout.SetFactionsHostile: " + ex.Message);
+            }
         }
 
         protected void SetupGangWarFaction(Ped ped, RelationshipGroup myGroup, RelationshipGroup enemyGroup)

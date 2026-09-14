@@ -96,7 +96,10 @@ namespace PeligroExtremoCallouts.Core
                     Directory.CreateDirectory(dir);
                 }
             }
-            catch { }
+            catch (Exception ex)
+            {
+                Game.LogTrivial("PeligroExtremoCallouts.ConfigManager.CreateDefaultIni: " + ex.Message);
+            }
         }
     }
 }
