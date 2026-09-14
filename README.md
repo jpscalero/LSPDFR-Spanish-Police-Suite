@@ -122,19 +122,24 @@ Reemplaza y amplía al **100%** las funciones de los clásicos *StopThePed* y *U
 
 ## 🛠️ Compilación desde el Código Fuente
 
-El proyecto está diseñado bajo el estándar estricto de **C# 5** compatible con el compilador nativo de Windows `.NET Framework 4.8` (`csc.exe`):
+El proyecto cuenta con un pipeline de compilación unificado en PowerShell compatible con **C# 5** y `.NET Framework 4.8` (`csc.exe` x64):
 
+1. Configura tus rutas locales si difieren de las estándar de Steam copiando `build.config.json.example` a `build.config.json`.
+2. Ejecuta el pipeline de compilación automatizado:
 ```powershell
-python tests/build_spi.py
-python tests/build_extended_suite.py
+# Compilar las 8 DLLs en la carpeta bin/
+pwsh -File .\build.ps1 -Clean
+
+# Compilar y desplegar automáticamente en GTA V / plugins / LSPDFR
+pwsh -File .\build.ps1 -Deploy
 ```
 
-### ✅ Verificación Automatizada (449 Pruebas Superadas)
+### ✅ Verificación y Calidad Técnica (457 Comprobaciones Superadas)
 Toda la suite ha sido validada exhaustivamente mediante pruebas de sintaxis C# 5, algoritmos oficiales y despliegue:
 ```powershell
 python tests/verify_master_all.py
 ```
-👉 **[Consulta el Informe de Verificación Completo (449/449 Superadas)](INFORME_DE_VERIFICACION.md)** con el desglose pormenorizado de todas las pruebas.
+👉 **[Consulta el Informe de Verificación Completo](INFORME_DE_VERIFICACION.md)** con el desglose pormenorizado de todas las pruebas y la metodología aplicada.
 
 ---
 
