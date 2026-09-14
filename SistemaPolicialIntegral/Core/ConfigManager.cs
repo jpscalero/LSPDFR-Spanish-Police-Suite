@@ -16,6 +16,15 @@ namespace SistemaPolicialIntegral.Core
         public static int ArmorPlateHP { get; set; }
         public static int TowResponseTime { get; set; }
 
+        public static bool AmbientServicesEnabled { get; set; }
+        public static int AmbientIntervalMin { get; set; }
+        public static int AmbientIntervalMax { get; set; }
+        public static bool AmbientPoliceEnabled { get; set; }
+        public static bool AmbientAmbulanceEnabled { get; set; }
+        public static bool AmbientHearseEnabled { get; set; }
+        public static bool AmbientFireEnabled { get; set; }
+        public static bool AmbientTowEnabled { get; set; }
+
         public static void Load()
         {
             string filePath = "Plugins/SistemaPolicialIntegral.ini";
@@ -39,6 +48,15 @@ namespace SistemaPolicialIntegral.Core
             TaserNmiDuration = ini.ReadInt32("General", "TaserNmiDuration", 5);
             ArmorPlateHP = ini.ReadInt32("Balistica", "ArmorPlateHP", 50);
             TowResponseTime = ini.ReadInt32("Grua", "TowResponseTime", 30);
+
+            AmbientServicesEnabled = ini.ReadBoolean("ServiciosAmbientales", "AmbientServicesEnabled", true);
+            AmbientIntervalMin = ini.ReadInt32("ServiciosAmbientales", "IntervaloMinSegundos", 45);
+            AmbientIntervalMax = ini.ReadInt32("ServiciosAmbientales", "IntervaloMaxSegundos", 75);
+            AmbientPoliceEnabled = ini.ReadBoolean("ServiciosAmbientales", "HabilitarPatrullasPolicia", true);
+            AmbientAmbulanceEnabled = ini.ReadBoolean("ServiciosAmbientales", "HabilitarAmbulanciasSAMUR", true);
+            AmbientHearseEnabled = ini.ReadBoolean("ServiciosAmbientales", "HabilitarCochesFunebres", true);
+            AmbientFireEnabled = ini.ReadBoolean("ServiciosAmbientales", "HabilitarBomberos", true);
+            AmbientTowEnabled = ini.ReadBoolean("ServiciosAmbientales", "HabilitarGruasMunicipales", true);
 
             Game.LogTrivial("SistemaPolicialIntegral: Configuración cargada.");
         }

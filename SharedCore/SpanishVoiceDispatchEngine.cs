@@ -206,6 +206,31 @@ namespace PoliceSuite.Common
             SpeakDispatch("Sala 091 a patrulla en servicio: acudan de urgencia en Codigo 3 a requerimiento ciudadano.");
         }
 
+        public static void AnnounceAmbientPolicePatrol()
+        {
+            SpeakDispatch("Sala 091 a indicativo Zeta: acudan de urgencia en Codigo 3 a requerimiento de seguridad ciudadana.");
+        }
+
+        public static void AnnounceAmbientAmbulance()
+        {
+            SpeakDispatch("Centro Coordinador de Urgencias Sanitarias: unidad SAMUR acudiendo en Codigo 3 por emergencia medica grave.");
+        }
+
+        public static void AnnounceAmbientHearse()
+        {
+            SpeakDispatch("Servicio Funerario Judicial: comitiva en transito solemne hacia las dependencias forenses del tanatorio.");
+        }
+
+        public static void AnnounceAmbientFireTruck()
+        {
+            SpeakDispatch("Central de Bomberos a Bomba Urbana: salida prioritaria en Codigo 3 por aviso de incendio y rescate.");
+        }
+
+        public static void AnnounceAmbientTowTruck()
+        {
+            SpeakDispatch("Base de Grua Municipal: unidad de asistencia en ruta para retirada y despeje de vehiculo averiado.");
+        }
+
         public static void AnnounceDniCheck(string dni, string nombre)
         {
             SpeakDispatch("Sala 091 verificando antecedentes en SITEL para " + nombre + " con documento " + dni);
