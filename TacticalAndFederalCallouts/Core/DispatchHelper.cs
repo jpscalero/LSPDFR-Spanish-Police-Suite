@@ -15,8 +15,9 @@ namespace TacticalAndFederalCallouts.Core
             {
                 Game.DisplayNotification("3dtextures", "mpgroundlogo_cops", "~b~" + calloutName, "~y~" + stateSubtitle, messageBody);
             }
-            catch
+            catch (Exception ex)
             {
+                Game.LogTrivial("DispatchHelper.SendDispatchNotification: " + ex.Message);
                 Game.DisplaySubtitle("~b~[" + calloutName + "]~w~ " + stateSubtitle);
             }
         }
@@ -51,7 +52,10 @@ namespace TacticalAndFederalCallouts.Core
             {
                 Functions.PlayScannerAudioUsingPosition(audioString, position);
             }
-            catch { }
+            catch (Exception ex)
+            {
+                Game.LogTrivial("DispatchHelper.PlayDispatchAudio: " + ex.Message);
+            }
         }
     }
 }

@@ -269,7 +269,10 @@ namespace TacticalAndFederalCallouts.Core
                     return waterZ;
                 }
             }
-            catch { }
+            catch (Exception ex)
+            {
+                Game.LogTrivial("BaseCallout.GetGroundZ: " + ex.Message);
+            }
             return pos.Z;
         }
 
@@ -297,8 +300,9 @@ namespace TacticalAndFederalCallouts.Core
                 Cleaner.RegisterPed(p);
                 return p;
             }
-            catch
+            catch (Exception ex)
             {
+                Game.LogTrivial("BaseCallout.SpawnPed: " + ex.Message);
                 return null;
             }
         }
@@ -327,8 +331,9 @@ namespace TacticalAndFederalCallouts.Core
                 Vehicles.Add(v);
                 return v;
             }
-            catch
+            catch (Exception ex)
             {
+                Game.LogTrivial("BaseCallout.SpawnVehicle: " + ex.Message);
                 return null;
             }
         }
@@ -348,8 +353,9 @@ namespace TacticalAndFederalCallouts.Core
                 ActiveProps.Add(prop);
                 return prop;
             }
-            catch
+            catch (Exception ex)
             {
+                Game.LogTrivial("BaseCallout.SpawnProp: " + ex.Message);
                 return null;
             }
         }
@@ -366,8 +372,9 @@ namespace TacticalAndFederalCallouts.Core
                 SuspectBlips[suspect] = b;
                 return b;
             }
-            catch
+            catch (Exception ex)
             {
+                Game.LogTrivial("BaseCallout.AttachBlipToSuspect: " + ex.Message);
                 return null;
             }
         }
@@ -384,8 +391,9 @@ namespace TacticalAndFederalCallouts.Core
                 HostageBlips[hostage] = b;
                 return b;
             }
-            catch
+            catch (Exception ex)
             {
+                Game.LogTrivial("BaseCallout.AttachBlipToHostage: " + ex.Message);
                 return null;
             }
         }
@@ -453,7 +461,10 @@ namespace TacticalAndFederalCallouts.Core
                 NativeFunction.Natives.SET_PED_TARGET_LOSS_RESPONSE(ped, 1); // Hunt / Search
                 NativeFunction.Natives.SET_PED_FLEE_ATTRIBUTES(ped, 0, false);
             }
-            catch { }
+            catch (Exception ex)
+            {
+                Game.LogTrivial("BaseCallout.ConfigureHostileCombatAttributes: " + ex.Message);
+            }
         }
 
         public void TriggerExplosion(Vector3 pos, int explosionType = 2, float damageScale = 5.0f)
@@ -462,7 +473,10 @@ namespace TacticalAndFederalCallouts.Core
             {
                 NativeFunction.Natives.ADD_EXPLOSION(pos.X, pos.Y, pos.Z, explosionType, damageScale, true, false, 1.0f);
             }
-            catch { }
+            catch (Exception ex)
+            {
+                Game.LogTrivial("BaseCallout.TriggerExplosion: " + ex.Message);
+            }
         }
 
         public void PlayPtfx(string asset, string effect, Vector3 pos, float scale = 1.0f)
@@ -483,7 +497,10 @@ namespace TacticalAndFederalCallouts.Core
                     NativeFunction.Natives.START_PARTICLE_FX_NON_LOOPED_AT_COORD(effect, pos.X, pos.Y, pos.Z, 0f, 0f, 0f, scale, false, false, false);
                 }
             }
-            catch { }
+            catch (Exception ex)
+            {
+                Game.LogTrivial("BaseCallout.PlayPtfx: " + ex.Message);
+            }
         }
 
         // ---------------- Helpers de Eventos y Escenarios Dinámicos ----------------
@@ -638,7 +655,10 @@ namespace TacticalAndFederalCallouts.Core
                 });
                 Cleaner.RegisterFiber(fiber);
             }
-            catch { }
+            catch (Exception ex)
+            {
+                Game.LogTrivial("BaseCallout.TriggerHostileSuppressiveFire: " + ex.Message);
+            }
         }
 
         public void TriggerScriptAlarm(string alarmName)
@@ -652,10 +672,16 @@ namespace TacticalAndFederalCallouts.Core
                     {
                         NativeFunction.Natives.STOP_ALARM(alarmName, true);
                     }
-                    catch { }
+                    catch (Exception exStop)
+                    {
+                        Game.LogTrivial("BaseCallout.TriggerScriptAlarm.StopAlarm: " + exStop.Message);
+                    }
                 });
             }
-            catch { }
+            catch (Exception ex)
+            {
+                Game.LogTrivial("BaseCallout.TriggerScriptAlarm: " + ex.Message);
+            }
         }
 
         public void ExtractHostageToSafety(Ped hostage, Vector3 safePoint)
@@ -681,7 +707,10 @@ namespace TacticalAndFederalCallouts.Core
                 });
                 Cleaner.RegisterFiber(fiber);
             }
-            catch { }
+            catch (Exception ex)
+            {
+                Game.LogTrivial("BaseCallout.ExtractHostageToSafety: " + ex.Message);
+            }
         }
 
         protected void NotifyCode4()

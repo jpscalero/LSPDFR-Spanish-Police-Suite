@@ -48,7 +48,10 @@ namespace TacticalAndFederalCallouts.Core
                 UndercoverGroup = new RelationshipGroup("FEDERAL_UNDERCOVER");
                 SetupFactions();
             }
-            catch { }
+            catch (Exception ex)
+            {
+                Game.LogTrivial("BaseFederalCallout.InitializeFederalGroups: " + ex.Message);
+            }
         }
 
         protected override void OnPlayerArrival()
@@ -79,7 +82,10 @@ namespace TacticalAndFederalCallouts.Core
                 Game.SetRelationshipBetweenRelationshipGroups(UndercoverGroup, copGroup, Relationship.Companion);
                 Game.SetRelationshipBetweenRelationshipGroups(copGroup, UndercoverGroup, Relationship.Companion);
             }
-            catch { }
+            catch (Exception ex)
+            {
+                Game.LogTrivial("BaseFederalCallout.SetupFactions: " + ex.Message);
+            }
         }
 
         protected virtual void EngageFederalTargets()

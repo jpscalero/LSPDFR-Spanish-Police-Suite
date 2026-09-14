@@ -76,7 +76,10 @@ namespace TacticalAndFederalCallouts.Core
                         blip.Delete();
                     }
                 }
-                catch { }
+                catch (Exception ex)
+                {
+                    Game.LogTrivial("CleanupManager.UnregisterBlip: " + ex.Message);
+                }
                 _blips.Remove(blip);
             }
         }
@@ -98,7 +101,10 @@ namespace TacticalAndFederalCallouts.Core
                         f.Abort();
                     }
                 }
-                catch { }
+                catch (Exception ex)
+                {
+                    Game.LogTrivial("CleanupManager.CleanAll.Fibers: " + ex.Message);
+                }
             }
             _fibers.Clear();
 
@@ -112,7 +118,10 @@ namespace TacticalAndFederalCallouts.Core
                         _customCleanups[i]();
                     }
                 }
-                catch { }
+                catch (Exception ex)
+                {
+                    Game.LogTrivial("CleanupManager.CleanAll.CustomCleanups: " + ex.Message);
+                }
             }
             _customCleanups.Clear();
 
@@ -128,7 +137,10 @@ namespace TacticalAndFederalCallouts.Core
                         b.Delete();
                     }
                 }
-                catch { }
+                catch (Exception ex)
+                {
+                    Game.LogTrivial("CleanupManager.CleanAll.Blips: " + ex.Message);
+                }
             }
             _blips.Clear();
 
@@ -155,7 +167,10 @@ namespace TacticalAndFederalCallouts.Core
                         }
                     }
                 }
-                catch { }
+                catch (Exception ex)
+                {
+                    Game.LogTrivial("CleanupManager.CleanAll.Peds: " + ex.Message);
+                }
             }
             _peds.Clear();
 
@@ -178,7 +193,10 @@ namespace TacticalAndFederalCallouts.Core
                         }
                     }
                 }
-                catch { }
+                catch (Exception ex)
+                {
+                    Game.LogTrivial("CleanupManager.CleanAll.Vehicles: " + ex.Message);
+                }
             }
             _vehicles.Clear();
 
@@ -194,7 +212,10 @@ namespace TacticalAndFederalCallouts.Core
                         obj.Delete();
                     }
                 }
-                catch { }
+                catch (Exception ex)
+                {
+                    Game.LogTrivial("CleanupManager.CleanAll.Props: " + ex.Message);
+                }
             }
             _props.Clear();
         }

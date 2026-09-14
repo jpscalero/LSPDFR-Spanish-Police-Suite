@@ -99,7 +99,10 @@ namespace TacticalAndFederalCallouts.Core
                     Directory.CreateDirectory(dir);
                 }
             }
-            catch { }
+            catch (Exception ex)
+            {
+                Game.LogTrivial("ConfigManager.CreateDefaultIni: " + ex.Message);
+            }
         }
     }
 }

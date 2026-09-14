@@ -154,8 +154,9 @@ namespace TacticalAndFederalCallouts.Core
             {
                 return NativeFunction.Natives.GET_PED_TARGET_FROM_COMBAT_PED<Ped>(ped, 0);
             }
-            catch
+            catch (Exception ex)
             {
+                Game.LogTrivial("BaseTacticalCallout.GetPedCombatTarget: " + ex.Message);
                 return null;
             }
         }

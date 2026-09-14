@@ -42,7 +42,10 @@ namespace TacticalAndFederalCallouts.Core
                     return true;
                 }
             }
-            catch { }
+            catch (Exception ex)
+            {
+                Game.LogTrivial("TacticalNegotiationManager.EvaluateSurrenderConditions: " + ex.Message);
+            }
 
             return false;
         }
@@ -82,7 +85,10 @@ namespace TacticalAndFederalCallouts.Core
                     }
                 });
             }
-            catch { }
+            catch (Exception ex)
+            {
+                Game.LogTrivial("TacticalNegotiationManager.ExecuteSurrender: " + ex.Message);
+            }
         }
 
         public static bool IsSurrendered(Ped ped)

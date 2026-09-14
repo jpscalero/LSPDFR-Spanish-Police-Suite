@@ -32,7 +32,10 @@ namespace TacticalAndFederalCallouts.Core
 
                 Game.DisplaySubtitle("~r~[SWAT BREACH]~w~ ¡Carga de brecha detonada! Entrada forzada autorizada.");
             }
-            catch { }
+            catch (Exception ex)
+            {
+                Game.LogTrivial("TacticalBreachManager.DetonateBreachingCharge: " + ex.Message);
+            }
         }
 
         public static void DeployFlashbang(Vector3 blastPos, List<Ped> suspects)
@@ -55,7 +58,10 @@ namespace TacticalAndFederalCallouts.Core
 
                 Game.DisplaySubtitle("~y~[FLASHBANG]~w~ ¡Granada aturdidora detonada! Sospechosos desorientados.");
             }
-            catch { }
+            catch (Exception ex)
+            {
+                Game.LogTrivial("TacticalBreachManager.DeployFlashbang: " + ex.Message);
+            }
         }
 
         public static void DeployTearGas(Vector3 gasPos, List<Ped> suspects)
@@ -78,7 +84,10 @@ namespace TacticalAndFederalCallouts.Core
                     }
                 }
             }
-            catch { }
+            catch (Exception ex)
+            {
+                Game.LogTrivial("TacticalAndFederalCallouts.TacticalBreachManager.DeployTearGas: " + ex.Message);
+            }
         }
 
         private static void ApplyStunEffect(Ped ped, int durationMs)
@@ -91,7 +100,10 @@ namespace TacticalAndFederalCallouts.Core
                 NativeFunction.Natives.SET_PED_ACCURACY(ped, 10);
                 NativeFunction.Natives.PLAY_PED_AMBIENT_SPEECH_NATIVE(ped, "GENERIC_FRIGHTENED_HIGH", "SPEECH_PARAMS_FORCE_SHOUTED");
             }
-            catch { }
+            catch (Exception ex)
+            {
+                Game.LogTrivial("TacticalAndFederalCallouts.TacticalBreachManager.ApplyStunEffect: " + ex.Message);
+            }
         }
     }
 }
