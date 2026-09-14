@@ -15,6 +15,15 @@ namespace PeligroExtremoCallouts.Core
         private readonly List<Blip> _blips = new List<Blip>();
         private readonly List<Rage.Object> _props = new List<Rage.Object>();
         private readonly List<GameFiber> _fibers = new List<GameFiber>();
+        private readonly List<Action> _customCleanups = new List<Action>();
+
+        public void RegisterCustomCleanup(Action action)
+        {
+            if (action != null)
+            {
+                _customCleanups.Add(action);
+            }
+        }
 
         public void RegisterPed(Ped ped)
         {
@@ -98,6 +107,23 @@ namespace PeligroExtremoCallouts.Core
                 }
             }
             _fibers.Clear();
+
+            // Ejecucion de cleanups personalizados registrados
+            for (int i = 0; i < _customCleanups.Count; i++)
+            {
+                try
+                {
+                    if (_customCleanups[i] != null)
+                    {
+                        _customCleanups[i]();
+                    }
+                }
+                catch (Exception ex)
+                {
+                    Game.LogTrivial("PeligroExtremoCallouts.CleanupManager.CleanAll_CustomCleanups: " + ex.Message);
+                }
+            }
+            _customCleanups.Clear();
 
             // Limpieza prioritaria de Blips en el mapa
             for (int i = 0; i < _blips.Count; i++)
