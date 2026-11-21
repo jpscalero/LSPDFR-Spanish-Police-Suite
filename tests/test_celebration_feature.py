@@ -38,7 +38,9 @@ class CelebrationFeatureTests(unittest.TestCase):
         self.assertIn("private const int MinimumOfficers = 5", self.manager)
         self.assertIn("CountActiveOfficers() < MinimumOfficers", self.manager)
         self.assertIn("officer.IsAlive", self.manager)
-        self.assertIn("SET_BLOCKING_OF_NON_TEMPORARY_EVENTS", self.manager)
+        self.assertIn("officer.BlockPermanentEvents = true", self.manager)
+        self.assertIn("officer.IsPersistent = true", self.manager)
+        self.assertIn("officerModel.LoadAndWait()", self.manager)
 
     def test_blue_marker_requires_interaction_and_scene_camera(self):
         self.assertIn("0, 125, 255, 155", self.manager)

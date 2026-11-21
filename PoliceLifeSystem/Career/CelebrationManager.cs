@@ -203,17 +203,21 @@ namespace PoliceLifeSystem.Career
             _lastSpawnAttempt = Game.GameTime;
             CleanupOfficers();
 
+            Model officerModel = new Model(OfficerModel);
+            officerModel.LoadAndWait();
+
             for (int i = 0; i < OfficerSpawns.Length; i++)
             {
                 try
                 {
-                    Ped officer = new Ped(OfficerModel, OfficerSpawns[i], 180.0f);
+                    Ped officer = new Ped(officerModel, OfficerSpawns[i], 180.0f);
                     if (officer == null || !officer.Exists()) continue;
 
+                    officer.IsPersistent = true;
+                    officer.BlockPermanentEvents = true;
                     NativeFunction.Natives.SET_ENTITY_AS_MISSION_ENTITY(officer, true, true);
                     NativeFunction.Natives.SET_ENTITY_INVINCIBLE(officer, true);
                     NativeFunction.Natives.SET_PED_AS_COP(officer, true);
-                    NativeFunction.Natives.SET_BLOCKING_OF_NON_TEMPORARY_EVENTS(officer, true);
                     NativeFunction.Natives.TASK_STAND_STILL(officer, -1);
                     Officers.Add(officer);
                 }
@@ -300,6 +304,8 @@ namespace PoliceLifeSystem.Career
                 }
 
                 NativeFunction.Natives.SET_CAM_FOV(camera, 48.0f);
+                NativeFunction.Natives.SET_CAM_COORD(camera, StationCenter.X + 9.0f, StationCenter.Y, StationCenter.Z + 4.2f);
+                NativeFunction.Natives.POINT_CAM_AT_COORD(camera, StationCenter.X, StationCenter.Y, StationCenter.Z + 1.2f);
                 NativeFunction.Natives.SET_CAM_ACTIVE(camera, true);
                 NativeFunction.Natives.RENDER_SCRIPT_CAMS(true, true, 900, true, false);
                 cameraRendered = true;
