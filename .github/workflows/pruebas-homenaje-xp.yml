@@ -1,0 +1,22 @@
+name: Pruebas del homenaje de carrera
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  pruebas:
+    name: Verificar programación e integración
+    runs-on: windows-latest
+    steps:
+      - name: Descargar el repositorio
+        uses: actions/checkout@v4
+      - name: Preparar Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.x"
+      - name: Comprobar integración de la celebración
+        run: python tests/test_celebration_feature.py
+      - name: Probar el cálculo del intervalo en C#
+        shell: pwsh
+        run: ./tests/test_celebration_schedule.ps1

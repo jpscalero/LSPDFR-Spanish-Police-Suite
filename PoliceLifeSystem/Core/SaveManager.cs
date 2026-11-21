@@ -1,4 +1,5 @@
 using System;
+using System.Globalization;
 using System.IO;
 using Rage;
 using PoliceLifeSystem.Career;
@@ -17,6 +18,8 @@ namespace PoliceLifeSystem.Core
         {
             try
             {
+                CelebrationManager.ResetPersistentState();
+
                 if (!Directory.Exists(DataDirectory))
                 {
                     Directory.CreateDirectory(DataDirectory);
@@ -50,6 +53,22 @@ namespace PoliceLifeSystem.Core
                             else if (key.Equals("MedalsUnlocked", StringComparison.OrdinalIgnoreCase))
                             {
                                 MedalSystem.LoadSerializedMedals(val);
+                            }
+                            else if (key.Equals("CelebrationLastDate", StringComparison.OrdinalIgnoreCase))
+                            {
+                                DateTime lastCelebrationDate;
+                                if (DateTime.TryParse(val, CultureInfo.InvariantCulture, DateTimeStyles.RoundtripKind, out lastCelebrationDate))
+                                {
+                                    CelebrationManager.LastCelebrationDate = lastCelebrationDate;
+                                }
+                            }
+                            else if (key.Equals("CelebrationPending", StringComparison.OrdinalIgnoreCase))
+                            {
+                                bool celebrationPending;
+                                if (bool.TryParse(val, out celebrationPending))
+                                {
+                                    CelebrationManager.IsPending = celebrationPending;
+                                }
                             }
                             else if (key.Equals("TotalArrests", StringComparison.OrdinalIgnoreCase))
                             {
@@ -125,6 +144,8 @@ namespace PoliceLifeSystem.Core
                     sw.WriteLine("CurrentRank=" + RankManager.CurrentRank);
                     sw.WriteLine("CurrentXP=" + XPSystem.CurrentXP);
                     sw.WriteLine("MedalsUnlocked=" + MedalSystem.GetSerializedMedals());
+                    sw.WriteLine("CelebrationLastDate=" + CelebrationManager.LastCelebrationDate.ToString("o", CultureInfo.InvariantCulture));
+                    sw.WriteLine("CelebrationPending=" + CelebrationManager.IsPending);
                     sw.WriteLine("TotalArrests=" + PerformanceStats.TotalArrests);
                     sw.WriteLine("TotalCitations=" + PerformanceStats.TotalCitations);
                     sw.WriteLine("HostilesNeutralized=" + PerformanceStats.HostilesNeutralized);

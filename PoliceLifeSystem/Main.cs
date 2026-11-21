@@ -34,6 +34,7 @@ namespace PoliceLifeSystem
         {
             try
             {
+                CelebrationManager.Stop();
                 SaveManager.Save();
                 Game.LogTrivial("PoliceLifeSystem: Plugin descargado y datos guardados correctamente.");
             }
@@ -45,6 +46,12 @@ namespace PoliceLifeSystem
 
         private static void OnOnDutyStateChangedHandler(bool onDuty)
         {
+            if (!onDuty)
+            {
+                CelebrationManager.Stop();
+                return;
+            }
+
             if (onDuty)
             {
                 try
@@ -59,6 +66,7 @@ namespace PoliceLifeSystem
 
                     SaveManager.Load();
                     CrimeTracker.LoadHistory();
+                    CelebrationManager.Start();
 
                     // Loop de salario y gastos periódicos
                     GameFiber.StartNew(delegate
