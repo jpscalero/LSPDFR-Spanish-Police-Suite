@@ -1,26 +1,22 @@
-$ErrorActionPreference = "Stop"
+﻿[CmdletBinding()]
+param(
+    [string]$ConfigPath = "..\build.config.json",
+    [switch]$Deploy,
+    [switch]$Clean
+)
 
-$scriptDir = Split-Path -Parent $MyInvocation.MyCommand.Path
-$csc = "C:\Windows\Microsoft.NET\Framework64\v4.0.30319\csc.exe"
-$outDll = Join-Path $scriptDir "PoliceLifeSystem.dll"
-
-$rphDll = "C:\Users\jpsca\Desktop\antigravity\mods\LSPDFR\rph_sdk\lib\net472\RagePluginHook.dll"
-$lspdfrDll = "C:\Users\jpsca\Desktop\antigravity\mods\LSPDFR\PoliceAcademyMod\LSPD_First_Response.dll"
-$rnuiDll = "C:\Users\jpsca\Desktop\antigravity\mods\LSPDFR\PoliceAcademyMod\RAGENativeUI.dll"
-
-Write-Host "Compilando PoliceLifeSystem..." -ForegroundColor Cyan
-
-& $csc /target:library /optimize+ `
-    /out:"$outDll" `
-    /r:"$rphDll" `
-    /r:"$lspdfrDll" `
-    /r:"$rnuiDll" `
-    /r:System.Windows.Forms.dll `
-    /r:System.Drawing.dll `
-    /recurse:"$scriptDir\*.cs"
-
-if ($LASTEXITCODE -eq 0) {
-    Write-Host "Compilación exitosa -> $outDll" -ForegroundColor Green
+$moduleDir = Split-Path -Parent $MyInvocation.MyCommand.Path
+$repoRoot = Split-Path -Parent $moduleDir
+$buildScript = Join-Path $repoRoot "build.ps1"
+$resolvedConfig = if ([System.IO.Path]::IsPathRooted($ConfigPath)) {
+    $ConfigPath
 } else {
-    Write-Host "Error en la compilación." -ForegroundColor Red
+    [System.IO.Path]::GetFullPath((Join-Path $moduleDir $ConfigPath))
 }
+
+if (-not (Test-Path -LiteralPath $buildScript -PathType Leaf)) {
+    throw "No se encontró el pipeline unificado: $buildScript"
+}
+
+& $buildScript -ConfigPath $resolvedConfig -Project "PoliceLifeSystem" -Deploy:$Deploy -Clean:$Clean -NoDeploy:(-not $Deploy.IsPresent)
+exit $LASTEXITCODE

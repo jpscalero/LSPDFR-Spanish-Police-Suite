@@ -5,7 +5,7 @@
 ## Pautas de Desarrollo
 
 1. **Estándar C# 5 Estricto**:
-   - Todo el código debe compilar con `csc.exe` v4.8 sin características de C# 6+.
+   - Todo el código debe compilar con `csc.exe` usando la versión de lenguaje C# 5 configurada por el pipeline.
    - Prohibido el uso de:
      - `$"..."` (interpolación de cadenas) $\rightarrow$ usar `string.Format()` o concatenación.
      - `?.` (operador null-conditional) $\rightarrow$ comprobación explícita `if (x != null)`.
