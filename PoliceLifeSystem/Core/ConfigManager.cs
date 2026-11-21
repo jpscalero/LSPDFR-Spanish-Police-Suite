@@ -12,6 +12,7 @@ namespace PoliceLifeSystem.Core
         public static Keys DocsKey { get; set; }
         public static int SalaryIntervalMinutes { get; set; }
         public static float XPMultiplier { get; set; }
+        public static int CelebrationIntervalDays { get; set; }
         public static int RentCost { get; set; }
         public static int FuelCost { get; set; }
 
@@ -22,6 +23,7 @@ namespace PoliceLifeSystem.Core
             DocsKey = Keys.Divide;
             SalaryIntervalMinutes = 48;
             XPMultiplier = 1.0f;
+            CelebrationIntervalDays = 7;
             RentCost = 600;
             FuelCost = 50;
         }
@@ -46,6 +48,9 @@ namespace PoliceLifeSystem.Core
                 DocsKey = ini.ReadEnum<Keys>("Teclas", "DocsKey", Keys.Divide);
 
                 XPMultiplier = (float)ini.ReadDouble("XP", "XPMultiplier", 1.0);
+                CelebrationIntervalDays = ini.ReadInt32("XP", "CelebrationIntervalDays", 7);
+                if (CelebrationIntervalDays < 1) CelebrationIntervalDays = 1;
+                if (CelebrationIntervalDays > 365) CelebrationIntervalDays = 365;
                 RentCost = ini.ReadInt32("Salarios", "RentCost", 600);
                 FuelCost = ini.ReadInt32("Salarios", "FuelCost", 50);
 
@@ -105,6 +110,8 @@ namespace PoliceLifeSystem.Core
                     sw.WriteLine("[XP]");
                     sw.WriteLine("; Multiplicador de experiencia para ascensos");
                     sw.WriteLine("XPMultiplier=1.0");
+                    sw.WriteLine("; Días de juego entre homenajes en la Comisaría Central (1-365)");
+                    sw.WriteLine("CelebrationIntervalDays=7");
                 }
 
                 Game.LogTrivial("PoliceLifeSystem: Archivo INI creado con éxito en " + path);

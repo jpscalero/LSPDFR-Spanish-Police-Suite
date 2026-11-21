@@ -100,7 +100,7 @@ if (-not (Test-Path $OutputDir)) {
 # 4. Definición de los 8 Módulos de la Suite
 $AllModules = @(
     @{ Name = "SistemaPolicialIntegral";    Dir = "SistemaPolicialIntegral";    NeedsShared = $true  },
-    @{ Name = "PoliceLifeSystem";           Dir = "PoliceLifeSystem";           NeedsShared = $false },
+    @{ Name = "PoliceLifeSystem";           Dir = "PoliceLifeSystem";           NeedsShared = $true  },
     @{ Name = "TacticalOps";                Dir = "TacticalOps";                NeedsShared = $false },
     @{ Name = "RadioYJusticia";             Dir = "RadioYJusticia";             NeedsShared = $true  },
     @{ Name = "MisionesEspeciales";         Dir = "MisionesEspeciales";         NeedsShared = $true  },
