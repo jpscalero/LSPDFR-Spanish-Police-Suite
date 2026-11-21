@@ -1,4 +1,4 @@
-# ==============================================================================
+﻿# ==============================================================================
 # LSPDFR Spanish Police Suite - Unified Build Pipeline
 # Compatible with PowerShell 5.1+ / PowerShell Core (pwsh)
 # Target: C# 5.0 / .NET Framework 4.8 / x64 Architecture
@@ -13,7 +13,9 @@ param(
     [string]$Project = "All",
 
     [switch]$Deploy,
-    [switch]$Clean
+    [switch]$Clean,
+    [switch]$NoDeploy,
+    [switch]$ValidateOnly
 )
 
 $ErrorActionPreference = "Stop"
@@ -30,74 +32,116 @@ $ExampleConfigPath  = Join-Path $ScriptDir "build.config.json.example"
 $Config = $null
 if (Test-Path $ResolvedConfigPath) {
     Write-Host "[CONFIG] Cargando configuración desde: $ResolvedConfigPath" -ForegroundColor DarkGray
-    $Config = Get-Content $ResolvedConfigPath -Raw | ConvertFrom-Json
+    try {
+        $Config = Get-Content $ResolvedConfigPath -Raw | ConvertFrom-Json -ErrorAction Stop
+    } catch {
+        throw "La configuración '$ResolvedConfigPath' no es JSON válido: $($_.Exception.Message)"
+    }
+    $ConfigDirectory = Split-Path -Parent $ResolvedConfigPath
 } elseif (Test-Path $ExampleConfigPath) {
     Write-Host "[CONFIG] '$ResolvedConfigPath' no encontrado. Usando plantilla: $ExampleConfigPath" -ForegroundColor Yellow
-    $Config = Get-Content $ExampleConfigPath -Raw | ConvertFrom-Json
+    try {
+        $Config = Get-Content $ExampleConfigPath -Raw | ConvertFrom-Json -ErrorAction Stop
+    } catch {
+        throw "La plantilla '$ExampleConfigPath' no es JSON válido: $($_.Exception.Message)"
+    }
+    $ConfigDirectory = $ScriptDir
 } else {
-    Write-Host "[CONFIG] Configuración no encontrada. Aplicando valores predeterminados de fábrica." -ForegroundColor Yellow
-    $Config = [PSComObject]@{
-        gtaPath      = "C:\Program Files (x86)\Steam\steamapps\common\Grand Theft Auto V"
-        rphSdkPath   = ".\rph_sdk\lib\net472\RagePluginHook.dll"
-        cscPath      = "C:\Windows\Microsoft.NET\Framework64\v4.0.30319\csc.exe"
-        outputDir    = ".\bin"
-        deployToGame = $false
+    throw "No existe la configuración ni la plantilla '$ExampleConfigPath'."
+}
+
+function Resolve-BuildPath {
+    param([string]$Value, [string]$BaseDirectory)
+    if ([string]::IsNullOrWhiteSpace($Value)) { return $null }
+    if ([System.IO.Path]::IsPathRooted($Value)) {
+        return [System.IO.Path]::GetFullPath($Value)
     }
+    return [System.IO.Path]::GetFullPath((Join-Path $BaseDirectory $Value))
 }
 
-# 2. Resolver y Validar Rutas de Herramientas y Dependencias
-$CscPath = $Config.cscPath
-if (-not (Test-Path $CscPath)) {
-    $FallbackCsc = "C:\Windows\Microsoft.NET\Framework64\v4.0.30319\csc.exe"
-    if (Test-Path $FallbackCsc) {
-        $CscPath = $FallbackCsc
-    } else {
-        Write-Error "CRÍTICO: No se encontró el compilador C# (csc.exe) en '$CscPath' ni en '$FallbackCsc'."
+function Get-FirstExistingFile {
+    param([string[]]$Candidates)
+    foreach ($candidate in $Candidates) {
+        if (-not [string]::IsNullOrWhiteSpace($candidate) -and (Test-Path -LiteralPath $candidate -PathType Leaf)) {
+            return [System.IO.Path]::GetFullPath($candidate)
+        }
     }
+    return $null
 }
 
-$GtaDir = $Config.gtaPath
-$OutputDir = if ([System.IO.Path]::IsPathRooted($Config.outputDir)) { $Config.outputDir } else { Join-Path $ScriptDir $Config.outputDir }
-$ShouldDeploy = $Deploy.IsPresent -or ($Config.deployToGame -eq $true)
-
-$RphRef = if ([System.IO.Path]::IsPathRooted($Config.rphSdkPath)) { $Config.rphSdkPath } else { Join-Path $ScriptDir $Config.rphSdkPath }
-if (-not (Test-Path $RphRef)) {
-    $RphRef = Join-Path $ScriptDir "rph_sdk\lib\net472\RagePluginHook.dll"
+function Assert-ManagedAssembly {
+    param([string]$Path, [string]$Name)
+    if ([string]::IsNullOrWhiteSpace($Path)) {
+        throw "Falta la ruta de $Name. Configura gtaPath y/o la ruta DLL correspondiente en build.config.json, o establece GTA_V_ROOT."
+    }
+    if (-not (Test-Path -LiteralPath $Path -PathType Leaf)) {
+        throw "No se encontró $Name en '$Path'. Configura build.config.json o las variables de entorno indicadas en README.md."
+    }
+    try {
+        $assemblyName = [System.Reflection.AssemblyName]::GetAssemblyName($Path)
+    } catch {
+        throw "La referencia $Name no es un ensamblado .NET válido: '$Path'. $($_.Exception.Message)"
+    }
+    if ([string]::IsNullOrWhiteSpace($assemblyName.Name)) {
+        throw "La referencia $Name no contiene un nombre de ensamblado válido: '$Path'."
+    }
+    Write-Host ("   {0,-18}: {1} ({2}, {3})" -f $Name, $Path, $assemblyName.Name, $assemblyName.Version) -ForegroundColor DarkGray
 }
 
-$LspdfrRef = Join-Path $GtaDir "plugins\LSPD First Response.dll"
-$RageuiRef = Join-Path $GtaDir "RAGENativeUI.dll"
-$PluginsDir = Join-Path $GtaDir "plugins\LSPDFR"
+$GtaDir = Resolve-BuildPath -Value ([string]$Config.gtaPath) -BaseDirectory $ConfigDirectory
+if (-not $GtaDir -and $env:GTA_V_ROOT) { $GtaDir = [System.IO.Path]::GetFullPath($env:GTA_V_ROOT) }
+
+$ConfiguredRph = Resolve-BuildPath -Value ([string]$Config.rphSdkPath) -BaseDirectory $ConfigDirectory
+$ConfiguredLspdfr = Resolve-BuildPath -Value ([string]$Config.lspdfrDllPath) -BaseDirectory $ConfigDirectory
+$ConfiguredRageUi = Resolve-BuildPath -Value ([string]$Config.rageNativeUiPath) -BaseDirectory $ConfigDirectory
+
+$RphRef = if ($ConfiguredRph) {
+    $ConfiguredRph
+} else {
+    Get-FirstExistingFile @(
+        (Join-Path $ScriptDir "rph_sdk\lib\net472\RagePluginHook.dll"),
+        $(if ($GtaDir) { Join-Path $GtaDir "RagePluginHook.dll" })
+    )
+}
+$LspdfrRef = if ($ConfiguredLspdfr) { $ConfiguredLspdfr } elseif ($GtaDir) { Join-Path $GtaDir "plugins\LSPD First Response.dll" } else { $null }
+$RageuiRef = if ($ConfiguredRageUi) { $ConfiguredRageUi } elseif ($GtaDir) { Join-Path $GtaDir "RAGENativeUI.dll" } else { $null }
+$PluginsDir = if ($GtaDir) { Join-Path $GtaDir "plugins\LSPDFR" } else { $null }
+
+$ConfiguredCsc = Resolve-BuildPath -Value ([string]$Config.cscPath) -BaseDirectory $ConfigDirectory
+$CscCandidates = @($ConfiguredCsc, $env:CSC_PATH)
+if ($env:WINDIR) {
+    $CscCandidates += (Join-Path $env:WINDIR "Microsoft.NET\Framework64\v4.0.30319\csc.exe")
+    $CscCandidates += (Join-Path $env:WINDIR "Microsoft.NET\Framework\v4.0.30319\csc.exe")
+}
+$CscPath = Get-FirstExistingFile $CscCandidates
+if (-not $CscPath) {
+    throw "No se encontró csc.exe. Configura cscPath en build.config.json o establece CSC_PATH."
+}
+
+$ConfiguredOutput = if ([string]::IsNullOrWhiteSpace([string]$Config.outputDir)) { ".\bin" } else { [string]$Config.outputDir }
+$OutputDir = Resolve-BuildPath -Value $ConfiguredOutput -BaseDirectory $ConfigDirectory
+$ShouldDeploy = (-not $NoDeploy.IsPresent) -and $Deploy.IsPresent
 
 Write-Host " Verificaciones del Entorno:" -ForegroundColor Gray
 Write-Host "   Compilador CSC   : $CscPath" -ForegroundColor DarkGray
-Write-Host "   RPH SDK          : $RphRef $(if (Test-Path $RphRef) {'[OK]'} else {'[NO ENCONTRADO]'})" -ForegroundColor $(if (Test-Path $RphRef) {'DarkGray'} else {'Red'})
-Write-Host "   LSPDFR DLL       : $LspdfrRef $(if (Test-Path $LspdfrRef) {'[OK]'} else {'[NO ENCONTRADO]'})" -ForegroundColor $(if (Test-Path $LspdfrRef) {'DarkGray'} else {'Red'})
-Write-Host "   RAGENativeUI     : $RageuiRef $(if (Test-Path $RageuiRef) {'[OK]'} else {'[NO ENCONTRADO]'})" -ForegroundColor $(if (Test-Path $RageuiRef) {'DarkGray'} else {'Red'})
+Write-Host "   GTA V root       : $(if ($GtaDir) {$GtaDir} else {'not set (direct DLL paths required)'})" -ForegroundColor DarkGray
 Write-Host "   Directorio Salida: $OutputDir" -ForegroundColor DarkGray
 Write-Host "   Despliegue GTA   : $(if ($ShouldDeploy) {'ACTIVADO -> ' + $PluginsDir} else {'DESACTIVADO'})" -ForegroundColor DarkGray
 Write-Host ""
 
-if (-not (Test-Path $RphRef)) {
-    Write-Error "Falta referencia requerida: RagePluginHook.dll en '$RphRef'."
+Assert-ManagedAssembly -Path $RphRef -Name "RagePluginHook.dll"
+Assert-ManagedAssembly -Path $LspdfrRef -Name "LSPD First Response.dll"
+Assert-ManagedAssembly -Path $RageuiRef -Name "RAGENativeUI.dll"
+
+if ($ShouldDeploy -and (-not $GtaDir -or -not (Test-Path -LiteralPath $PluginsDir -PathType Container))) {
+    throw "El despliegue está activado, pero el directorio GTA V/plugins/LSPDFR no existe. Revisa gtaPath antes de desplegar."
 }
-if (-not (Test-Path $LspdfrRef)) {
-    Write-Error "Falta referencia requerida: LSPD First Response.dll en '$LspdfrRef'."
-}
-if (-not (Test-Path $RageuiRef)) {
-    Write-Error "Falta referencia requerida: RAGENativeUI.dll en '$RageuiRef'."
+if ($ValidateOnly) {
+    Write-Host "[OK] Configuración, compilador y referencias .NET validados." -ForegroundColor Green
+    exit 0
 }
 
-# 3. Preparar Carpeta de Salida
-if ($Clean.IsPresent -and (Test-Path $OutputDir)) {
-    Write-Host "[CLEAN] Limpiando carpeta de salida: $OutputDir" -ForegroundColor Yellow
-    Remove-Item -Path $OutputDir -Recurse -Force
-}
-if (-not (Test-Path $OutputDir)) {
-    New-Item -Path $OutputDir -ItemType Directory -Force | Out-Null
-}
-
-# 4. Definición de los 8 Módulos de la Suite
+# 3. Definición de los 8 Módulos de la Suite
 $AllModules = @(
     @{ Name = "SistemaPolicialIntegral";    Dir = "SistemaPolicialIntegral";    NeedsShared = $true  },
     @{ Name = "PoliceLifeSystem";           Dir = "PoliceLifeSystem";           NeedsShared = $false },
@@ -109,14 +153,33 @@ $AllModules = @(
     @{ Name = "AlternativeCallouts";        Dir = "AlternativeCallouts";        NeedsShared = $true  }
 )
 
-$ModulesToBuild = if ($Project -eq "All") {
-    $AllModules
+if ($Project -eq "All") {
+    $ModulesToBuild = @($AllModules)
 } else {
-    $AllModules | Where-Object { $_.Name -like "*$Project*" }
+    $ModulesToBuild = @($AllModules | Where-Object { $_.Name -like "*$Project*" })
 }
 
 if ($ModulesToBuild.Count -eq 0) {
-    Write-Error "No se encontró ningún módulo que coincida con el nombre '$Project'."
+    throw "No se encontró ningún módulo que coincida con el nombre '$Project'."
+}
+
+# 4. Preparar Carpeta de Salida. Limpiar solo los artefactos propios de los módulos seleccionados.
+if ((Test-Path -LiteralPath $OutputDir) -and -not (Test-Path -LiteralPath $OutputDir -PathType Container)) {
+    throw "El destino de salida existe y no es un directorio: '$OutputDir'."
+}
+if ($Clean.IsPresent -and (Test-Path -LiteralPath $OutputDir -PathType Container)) {
+    Write-Host "[CLEAN] Quitando artefactos de los módulos seleccionados en: $OutputDir" -ForegroundColor Yellow
+    foreach ($mod in $ModulesToBuild) {
+        foreach ($extension in @("dll", "ini")) {
+            $artifact = Join-Path $OutputDir ("{0}.{1}" -f $mod.Name, $extension)
+            if (Test-Path -LiteralPath $artifact -PathType Leaf) {
+                Remove-Item -LiteralPath $artifact -Force
+            }
+        }
+    }
+}
+if (-not (Test-Path -LiteralPath $OutputDir -PathType Container)) {
+    New-Item -Path $OutputDir -ItemType Directory -Force | Out-Null
 }
 
 # 5. Obtener Fuentes Compartidas (SharedCore)
@@ -143,7 +206,10 @@ foreach ($mod in $ModulesToBuild) {
     $modStopwatch = [System.Diagnostics.Stopwatch]::StartNew()
 
     # Creación de archivo de respuesta .rsp para evitar problemas con rutas con espacios y límites de CLI
-    $rspFile = Join-Path $env:TEMP "csc_$modName.rsp"
+    $tempBase = Join-Path ([System.IO.Path]::GetTempPath()) ("lsp_build_{0}_{1}" -f $modName, [guid]::NewGuid().ToString("N"))
+    $rspFile = "$tempBase.rsp"
+    $stdoutFile = "$tempBase.stdout.txt"
+    $stderrFile = "$tempBase.stderr.txt"
     $rspLines = [System.Collections.Generic.List[string]]::new()
     $rspLines.Add("/target:library")
     $rspLines.Add("/out:`"$outDll`"")
@@ -159,8 +225,16 @@ foreach ($mod in $ModulesToBuild) {
     $rspLines.Add("/reference:System.Core.dll")
     $rspLines.Add("/reference:System.Drawing.dll")
     $rspLines.Add("/reference:System.Windows.Forms.dll")
-    $SpeechRef = "C:\Windows\Microsoft.NET\assembly\GAC_MSIL\System.Speech\v4.0_4.0.0.0__31bf3856ad364e35\System.Speech.dll"
-    if (Test-Path $SpeechRef) {
+    $SpeechRef = $null
+    if ($env:WINDIR) {
+        $SpeechGacRoot = Join-Path $env:WINDIR "Microsoft.NET\assembly\GAC_MSIL\System.Speech"
+        if (Test-Path -LiteralPath $SpeechGacRoot -PathType Container) {
+            $SpeechRef = Get-FirstExistingFile @(
+                (Get-ChildItem -LiteralPath $SpeechGacRoot -Filter "System.Speech.dll" -File -Recurse -ErrorAction SilentlyContinue | Select-Object -ExpandProperty FullName)
+            )
+        }
+    }
+    if ($SpeechRef -and (Test-Path -LiteralPath $SpeechRef -PathType Leaf)) {
         $rspLines.Add("/reference:`"$SpeechRef`"")
     } else {
         $rspLines.Add("/reference:System.Speech.dll")
@@ -169,15 +243,18 @@ foreach ($mod in $ModulesToBuild) {
     foreach ($s in $sources) {
         $rspLines.Add("`"$s`"")
     }
-    [System.IO.File]::WriteAllLines($rspFile, $rspLines, [System.Text.Encoding]::UTF8)
+    try {
+        [System.IO.File]::WriteAllLines($rspFile, $rspLines, [System.Text.Encoding]::UTF8)
+        $proc = Start-Process -FilePath $CscPath -ArgumentList "@`"$rspFile`"" -NoNewWindow -PassThru -Wait -RedirectStandardOutput $stdoutFile -RedirectStandardError $stderrFile
+        $modStopwatch.Stop()
 
-    $proc = Start-Process -FilePath $CscPath -ArgumentList "@`"$rspFile`"" -NoNewWindow -PassThru -Wait -RedirectStandardOutput "$env:TEMP\csc_out.txt" -RedirectStandardError "$env:TEMP\csc_err.txt"
-    $modStopwatch.Stop()
-    
-    $stdout = if (Test-Path "$env:TEMP\csc_out.txt") { Get-Content "$env:TEMP\csc_out.txt" -Raw } else { "" }
-    $stderr = if (Test-Path "$env:TEMP\csc_err.txt") { Get-Content "$env:TEMP\csc_err.txt" -Raw } else { "" }
-
-    if (Test-Path $rspFile) { Remove-Item $rspFile -Force }
+        $stdout = if (Test-Path -LiteralPath $stdoutFile) { Get-Content $stdoutFile -Raw } else { "" }
+        $stderr = if (Test-Path -LiteralPath $stderrFile) { Get-Content $stderrFile -Raw } else { "" }
+    } finally {
+        foreach ($tempFile in @($rspFile, $stdoutFile, $stderrFile)) {
+            if (Test-Path -LiteralPath $tempFile -PathType Leaf) { Remove-Item -LiteralPath $tempFile -Force }
+        }
+    }
     
     if ($proc.ExitCode -eq 0 -and (Test-Path $outDll)) {
         $size = (Get-Item $outDll).Length

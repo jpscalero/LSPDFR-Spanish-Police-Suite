@@ -122,24 +122,29 @@ Reemplaza y amplía al **100%** las funciones de los clásicos *StopThePed* y *U
 
 ## 🛠️ Compilación desde el Código Fuente
 
-El proyecto cuenta con un pipeline de compilación unificado en PowerShell compatible con **C# 5** y `.NET Framework 4.8` (`csc.exe` x64):
+El pipeline usa `csc.exe` en modo x64 y fija el lenguaje en C# 5. Para compilar, se necesitan las dependencias oficiales de RAGE Plugin Hook, LSPDFR y RAGENativeUI.
 
-1. Configura tus rutas locales si difieren de las estándar de Steam copiando `build.config.json.example` a `build.config.json`.
-2. Ejecuta el pipeline de compilación automatizado:
+1. Copia `build.config.json.example` a `build.config.json` y configura `gtaPath` o las rutas directas de las tres DLL (`rphSdkPath`, `lspdfrDllPath`, `rageNativeUiPath`). También puedes definir `GTA_V_ROOT` y `CSC_PATH` en el entorno. Las rutas relativas se resuelven desde el archivo de configuración.
+2. Valida la configuración y las referencias sin compilar ni escribir archivos:
 ```powershell
-# Compilar las 8 DLLs en la carpeta bin/
-pwsh -File .\build.ps1 -Clean
+pwsh -File .\build.ps1 -ValidateOnly
+```
+3. Compila las ocho DLL en `bin/`, sin instalar archivos en el juego:
+```powershell
+# El despliegue está desactivado de forma predeterminada
+pwsh -File .\build.ps1 -Clean -NoDeploy
 
-# Compilar y desplegar automáticamente en GTA V / plugins / LSPDFR
+# El despliegue requiere solicitarlo explícitamente y validar gtaPath
 pwsh -File .\build.ps1 -Deploy
 ```
 
-### ✅ Verificación y Calidad Técnica (457 Comprobaciones Superadas)
-Toda la suite ha sido validada exhaustivamente mediante pruebas de sintaxis C# 5, algoritmos oficiales y despliegue:
+Las pruebas estáticas, de configuración y del DNI que no requieren GTA ni las DLL oficiales se ejecutan con:
 ```powershell
-python tests/verify_master_all.py
+python -m unittest discover -s tests -p "test_*.py"
+powershell.exe -NoProfile -ExecutionPolicy Bypass -File tests/validate_powershell.ps1
+powershell.exe -NoProfile -ExecutionPolicy Bypass -File tests/test_algorithms.ps1
 ```
-👉 **[Consulta el Informe de Verificación Completo](INFORME_DE_VERIFICACION.md)** con el desglose pormenorizado de todas las pruebas y la metodología aplicada.
+La compilación completa requiere las DLL oficiales instaladas. Consulta [el informe de validación](INFORME_DE_VERIFICACION.md) para conocer las pruebas ejecutadas y sus límites.
 
 ---
 

@@ -1,10 +1,10 @@
 {
-  "$schema": "http://json-schema.org/draft-07/schema#",
   "title": "LSPDFR Spanish Police Suite - Build Configuration",
-  "description": "Configuración local para compilar y desplegar la suite policial española",
-  "gtaPath": "C:\\Program Files (x86)\\Steam\\steamapps\\common\\Grand Theft Auto V",
-  "rphSdkPath": ".\\rph_sdk\\lib\\net472\\RagePluginHook.dll",
-  "cscPath": "C:\\Windows\\Microsoft.NET\\Framework64\\v4.0.30319\\csc.exe",
-  "outputDir": ".\\bin",
-  "deployToGame": false
+  "description": "Copia este archivo a build.config.json y completa las rutas locales necesarias. Las rutas relativas se resuelven desde el archivo de configuración.",
+  "gtaPath": "",
+  "rphSdkPath": "",
+  "lspdfrDllPath": "",
+  "rageNativeUiPath": "",
+  "cscPath": "",
+  "outputDir": "./bin"
 }

@@ -1,4 +1,5 @@
 using System;
+using System.Globalization;
 
 namespace SistemaPolicialIntegral.Census
 {
@@ -25,8 +26,13 @@ namespace SistemaPolicialIntegral.Census
             string numPart = dni.Substring(0, 8);
             char letraPart = dni[8];
 
+            for (int i = 0; i < numPart.Length; i++)
+            {
+                if (numPart[i] < '0' || numPart[i] > '9') return false;
+            }
+
             int num;
-            if (int.TryParse(numPart, out num))
+            if (int.TryParse(numPart, NumberStyles.None, CultureInfo.InvariantCulture, out num))
             {
                 return CalcularLetra(num) == char.ToUpper(letraPart);
             }
